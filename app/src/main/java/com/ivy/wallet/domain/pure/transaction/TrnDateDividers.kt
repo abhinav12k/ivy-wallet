@@ -67,7 +67,6 @@ suspend fun transactionsWithDateDividers(
                 exchange = exchange
             )
 
-
             listOf<TransactionHistoryItem>(
                 TransactionHistoryDateDivider(
                     date = date!!,

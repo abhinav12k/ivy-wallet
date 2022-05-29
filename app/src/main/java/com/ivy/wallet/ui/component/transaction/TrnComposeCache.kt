@@ -10,16 +10,18 @@ import java.util.*
 fun category(
     categoryId: UUID?,
     categories: List<Category>
-): Category? {
-    val targetId = categoryId ?: return null
-    return ivyWalletCtx().categoryMap[targetId] ?: categories.find { it.id == targetId }
-}
+): Category? = com.ivy.wallet.domain.pure.transaction.category(
+    categoryId = categoryId,
+    categories = categories,
+    categoryMap = ivyWalletCtx().categoryMap
+)
 
 @Composable
 fun account(
     accountId: UUID?,
     accounts: List<Account>
-): Account? {
-    val targetId = accountId ?: return null
-    return ivyWalletCtx().accountMap[targetId] ?: accounts.find { it.id == targetId }
-}
+): Account? = com.ivy.wallet.domain.pure.transaction.account(
+    accountId = accountId,
+    accounts = accounts,
+    accountMap = ivyWalletCtx().accountMap
+)

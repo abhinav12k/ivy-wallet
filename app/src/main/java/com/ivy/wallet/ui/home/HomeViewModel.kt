@@ -200,7 +200,9 @@ class HomeViewModel @Inject constructor(
                 history = historyWithDateDivsAct(
                     HistoryWithDateDivsAct.Input(
                         range = timeRange,
-                        baseCurrency = baseCurrency
+                        baseCurrency = baseCurrency,
+                        accounts = stateVal().baseData.accounts,
+                        categories = stateVal().baseData.categories
                     )
                 )
             )
