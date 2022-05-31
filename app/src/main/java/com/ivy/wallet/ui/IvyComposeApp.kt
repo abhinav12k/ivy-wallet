@@ -21,6 +21,7 @@ import com.ivy.design.utils.IvyPreview
 import com.ivy.frp.view.navigation.Navigation
 import com.ivy.frp.view.navigation.NavigationRoot
 import com.ivy.wallet.IvyAndroidApp
+import com.ivy.wallet.ui.root.RootActivity
 
 
 @Composable

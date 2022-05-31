@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import com.ivy.frp.view.navigation.Navigation
 import com.ivy.wallet.ui.IvyWalletCtx
-import com.ivy.wallet.ui.RootActivity
+import com.ivy.wallet.ui.root.RootActivity
 
 data class CustomerJourneyCardData(
     val id: String,

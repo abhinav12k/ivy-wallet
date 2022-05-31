@@ -12,7 +12,7 @@ import com.ivy.wallet.android.notification.NotificationService
 import com.ivy.wallet.io.persistence.SharedPrefs
 import com.ivy.wallet.io.persistence.dao.TransactionDao
 import com.ivy.wallet.stringRes
-import com.ivy.wallet.ui.RootActivity
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.utils.atEndOfDay
 import com.ivy.wallet.utils.dateNowUTC
 import dagger.assisted.Assisted

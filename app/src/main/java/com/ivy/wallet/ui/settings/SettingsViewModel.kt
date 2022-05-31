@@ -25,7 +25,7 @@ import com.ivy.wallet.io.persistence.SharedPrefs
 import com.ivy.wallet.io.persistence.dao.SettingsDao
 import com.ivy.wallet.io.persistence.dao.UserDao
 import com.ivy.wallet.ui.IvyWalletCtx
-import com.ivy.wallet.ui.RootActivity
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

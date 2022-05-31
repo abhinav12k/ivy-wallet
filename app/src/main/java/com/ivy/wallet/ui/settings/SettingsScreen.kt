@@ -43,6 +43,7 @@ import com.ivy.wallet.domain.data.AuthProviderType
 import com.ivy.wallet.domain.data.IvyCurrency
 import com.ivy.wallet.domain.data.core.User
 import com.ivy.wallet.ui.*
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.ui.settings.experimental.ExperimentalScreen
 import com.ivy.wallet.ui.theme.*
 import com.ivy.wallet.ui.theme.components.IvyButton

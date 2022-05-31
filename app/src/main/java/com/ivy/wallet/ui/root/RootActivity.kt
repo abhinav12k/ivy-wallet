@@ -1,4 +1,4 @@
-package com.ivy.wallet.ui
+package com.ivy.wallet.ui.root
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -48,6 +48,7 @@ import com.ivy.wallet.Constants.SUPPORT_EMAIL
 import com.ivy.wallet.R
 import com.ivy.wallet.domain.data.TransactionType
 import com.ivy.wallet.domain.deprecated.logic.CustomerJourneyLogic
+import com.ivy.wallet.ui.*
 import com.ivy.wallet.ui.analytics.AnalyticsReport
 import com.ivy.wallet.ui.applocked.AppLockedScreen
 import com.ivy.wallet.ui.balance.BalanceScreen
@@ -140,7 +141,7 @@ class RootActivity : AppCompatActivity() {
 
             LaunchedEffect(isSystemInDarkTheme) {
                 viewModel.start(isSystemInDarkTheme, intent)
-                viewModel.initBilling(this@RootActivity)
+//                viewModel.initBilling(this@RootActivity)
             }
 
             IvyUI(

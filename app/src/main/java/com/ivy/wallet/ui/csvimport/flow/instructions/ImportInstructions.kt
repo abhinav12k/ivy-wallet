@@ -28,8 +28,8 @@ import com.ivy.frp.view.navigation.navigation
 import com.ivy.wallet.R
 import com.ivy.wallet.domain.deprecated.logic.csv.model.ImportType
 import com.ivy.wallet.ui.IvyWalletPreview
-import com.ivy.wallet.ui.RootActivity
 import com.ivy.wallet.ui.onboarding.components.OnboardingToolbar
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.ui.theme.GradientIvy
 import com.ivy.wallet.ui.theme.Gray
 import com.ivy.wallet.ui.theme.White

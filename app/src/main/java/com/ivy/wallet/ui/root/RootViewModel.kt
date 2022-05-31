@@ -1,32 +1,34 @@
-package com.ivy.wallet.ui
+package com.ivy.wallet.ui.root
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Some
 import com.ivy.design.l0_system.Theme
 import com.ivy.frp.test.TestIdlingResource
+import com.ivy.frp.then
 import com.ivy.frp.view.navigation.Navigation
+import com.ivy.frp.viewmodel.FRPViewModel
 import com.ivy.wallet.Constants
 import com.ivy.wallet.R
-import com.ivy.wallet.android.billing.IvyBilling
+import com.ivy.wallet.domain.action.settings.SettingsAct
+import com.ivy.wallet.domain.action.viewmodel.root.OnboardingCompletedAct
 import com.ivy.wallet.domain.data.TransactionType
-import com.ivy.wallet.domain.deprecated.logic.PaywallLogic
 import com.ivy.wallet.domain.deprecated.logic.notification.TransactionReminderLogic
 import com.ivy.wallet.io.network.IvyAnalytics
 import com.ivy.wallet.io.network.IvySession
 import com.ivy.wallet.io.persistence.SharedPrefs
 import com.ivy.wallet.io.persistence.dao.SettingsDao
 import com.ivy.wallet.stringRes
+import com.ivy.wallet.ui.EditTransaction
+import com.ivy.wallet.ui.IvyWalletCtx
+import com.ivy.wallet.ui.Main
+import com.ivy.wallet.ui.Onboarding
 import com.ivy.wallet.utils.ioThread
-import com.ivy.wallet.utils.readOnly
-import com.ivy.wallet.utils.sendToCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 
@@ -38,10 +40,15 @@ class RootViewModel @Inject constructor(
     private val settingsDao: SettingsDao,
     private val sharedPrefs: SharedPrefs,
     private val ivySession: IvySession,
-    private val ivyBilling: IvyBilling,
-    private val paywallLogic: PaywallLogic,
-    private val transactionReminderLogic: TransactionReminderLogic
-) : ViewModel() {
+    private val transactionReminderLogic: TransactionReminderLogic,
+
+    private val settingsAct: SettingsAct,
+    private val onboardingCompletedAct: OnboardingCompletedAct,
+) : FRPViewModel<RootState, RootEvent>() {
+
+    override val _state: MutableStateFlow<RootState> = MutableStateFlow(
+        RootState(appLocked = null)
+    )
 
     companion object {
         const val EXTRA_ADD_TRANSACTION_TYPE = "add_transaction_type_extra"
@@ -49,9 +56,27 @@ class RootViewModel @Inject constructor(
 
     private var appLockEnabled = false
 
-    private val _appLocked = MutableStateFlow<Boolean?>(null)
-    val appLocked = _appLocked.readOnly()
 
+    override suspend fun handleEvent(event: RootEvent): suspend () -> RootState = when (event) {
+        is RootEvent.Start -> TODO()
+        is RootEvent.LoadTheme -> loadTheme(event)
+        RootEvent.LockApp -> ::lockApp
+        RootEvent.UnlockApp -> ::unlockApp
+    }
+
+    private fun startNew(event: RootEvent.Start) = suspend {
+
+    }
+
+    private fun loadTheme(event: RootEvent.LoadTheme) = suspend {
+        ivyContext.switchTheme(Theme.AUTO)
+    } then settingsAct then { settings ->
+        ivyContext.switchTheme(settings.theme) //update to the selected by the user theme
+
+        ivyContext.updateCache { it.copy(settings = Some(settings)) }
+
+        stateVal()
+    }
 
     fun start(systemDarkMode: Boolean, intent: Intent) {
         viewModelScope.launch {
@@ -73,11 +98,11 @@ class RootViewModel @Inject constructor(
 
             ioThread {
                 ivySession.loadFromCache()
-                ivyAnalytics.loadSession()
+//                ivyAnalytics.loadSession()
 
                 appLockEnabled = sharedPrefs.getBoolean(SharedPrefs.APP_LOCK_ENABLED, false)
                 //initial app locked state
-                _appLocked.value = appLockEnabled
+                updateState { it.copy(appLocked = appLockEnabled) }
 
                 if (isOnboardingCompleted()) {
                     navigateOnboardedUser(intent)
@@ -100,9 +125,9 @@ class RootViewModel @Inject constructor(
 
     private fun handleSpecialStart(intent: Intent): Boolean {
         val addTrnType: TransactionType? = try {
-            intent.getSerializableExtra(EXTRA_ADD_TRANSACTION_TYPE) as? TransactionType ?:
-            TransactionType.valueOf(intent.getStringExtra(EXTRA_ADD_TRANSACTION_TYPE) ?: "")
-        } catch (e: IllegalArgumentException){
+            intent.getSerializableExtra(EXTRA_ADD_TRANSACTION_TYPE) as? TransactionType
+                ?: TransactionType.valueOf(intent.getStringExtra(EXTRA_ADD_TRANSACTION_TYPE) ?: "")
+        } catch (e: IllegalArgumentException) {
             null
         }
 
@@ -141,27 +166,27 @@ class RootViewModel @Inject constructor(
         }
     }
 
-    fun initBilling(activity: AppCompatActivity) {
-        ivyBilling.init(
-            activity = activity,
-            onReady = {
-                viewModelScope.launch {
-                    val purchases = ivyBilling.queryPurchases()
-                    paywallLogic.processPurchases(purchases)
-                }
-            },
-            onPurchases = { purchases ->
-                viewModelScope.launch {
-                    paywallLogic.processPurchases(purchases)
-                }
-
-            },
-            onError = { code, msg ->
-                sendToCrashlytics("IvyActivity Billing error: code=$code: $msg")
-                Timber.e("Billing error code=$code: $msg")
-            }
-        )
-    }
+//    fun initBilling(activity: AppCompatActivity) {
+//        ivyBilling.init(
+//            activity = activity,
+//            onReady = {
+//                viewModelScope.launch {
+//                    val purchases = ivyBilling.queryPurchases()
+//                    paywallLogic.processPurchases(purchases)
+//                }
+//            },
+//            onPurchases = { purchases ->
+//                viewModelScope.launch {
+//                    paywallLogic.processPurchases(purchases)
+//                }
+//
+//            },
+//            onError = { code, msg ->
+//                sendToCrashlytics("IvyActivity Billing error: code=$code: $msg")
+//                Timber.e("Billing error code=$code: $msg")
+//            }
+//        )
+//    }
 
     private fun isOnboardingCompleted(): Boolean {
         return sharedPrefs.getBoolean(SharedPrefs.ONBOARDING_COMPLETED, false)
@@ -175,16 +200,12 @@ class RootViewModel @Inject constructor(
 
     fun isAppLocked(): Boolean {
         //by default we assume that the app is locked
-        return appLocked.value ?: true
+        return stateVal().appLocked ?: true
     }
 
-    fun lockApp() {
-        _appLocked.value = true
-    }
+    private fun lockApp() = updateStateNonBlocking { it.copy(appLocked = true) }
 
-    fun unlockApp() {
-        _appLocked.value = false
-    }
+    private fun unlockApp() = updateStateNonBlocking { it.copy(appLocked = false) }
 
     private val userInactiveTime = AtomicLong(0)
     private var userInactiveJob: Job? = null

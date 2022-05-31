@@ -34,6 +34,7 @@ import com.ivy.frp.view.navigation.navigation
 import com.ivy.wallet.Constants
 import com.ivy.wallet.R
 import com.ivy.wallet.ui.*
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.ui.theme.Blue
 import com.ivy.wallet.ui.theme.Gray
 import com.ivy.wallet.ui.theme.components.BufferBattery

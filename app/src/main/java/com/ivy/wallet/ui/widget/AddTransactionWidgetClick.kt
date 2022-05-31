@@ -7,7 +7,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import androidx.annotation.IdRes
 import com.ivy.wallet.domain.data.TransactionType
-import com.ivy.wallet.ui.RootActivity
+import com.ivy.wallet.ui.root.RootActivity
 
 class AddTransactionWidgetClick {
     companion object {

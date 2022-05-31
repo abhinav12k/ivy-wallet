@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ivy.wallet.R
-import com.ivy.wallet.ui.RootActivity
+import com.ivy.wallet.ui.root.RootActivity
 
 @Composable
 fun MoneyManagerPraseSteps(

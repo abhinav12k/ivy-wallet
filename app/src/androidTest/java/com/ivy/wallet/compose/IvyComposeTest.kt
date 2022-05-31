@@ -23,7 +23,7 @@ import com.ivy.wallet.io.network.IvySession
 import com.ivy.wallet.io.persistence.IvyRoomDatabase
 import com.ivy.wallet.io.persistence.SharedPrefs
 import com.ivy.wallet.ui.IvyWalletCtx
-import com.ivy.wallet.ui.RootActivity
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.utils.timeNowUTC
 import com.ivy.wallet.utils.toEpochMilli
 import com.ivy.wallet.utils.toEpochSeconds

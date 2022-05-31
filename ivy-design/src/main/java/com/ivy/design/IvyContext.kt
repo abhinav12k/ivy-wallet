@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import com.ivy.design.l0_system.Theme
 
 abstract class IvyContext {
-    var theme: Theme by mutableStateOf(Theme.LIGHT)
+    var theme: Theme by mutableStateOf(Theme.AUTO)
         private set
 
     var screenWidth: Int = -1

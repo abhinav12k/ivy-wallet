@@ -29,9 +29,9 @@ import com.ivy.wallet.io.persistence.dao.SettingsDao
 import com.ivy.wallet.io.persistence.dao.TransactionDao
 import com.ivy.wallet.stringRes
 import com.ivy.wallet.ui.IvyWalletCtx
-import com.ivy.wallet.ui.RootActivity
 import com.ivy.wallet.ui.onboarding.model.TimePeriod
 import com.ivy.wallet.ui.paywall.PaywallReason
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.ui.theme.Gray
 import com.ivy.wallet.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel

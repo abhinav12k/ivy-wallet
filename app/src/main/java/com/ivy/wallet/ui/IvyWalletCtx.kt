@@ -5,10 +5,12 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import arrow.core.None
 import com.ivy.design.IvyContext
 import com.ivy.frp.view.navigation.Navigation
 import com.ivy.wallet.BuildConfig
 import com.ivy.wallet.Constants
+import com.ivy.wallet.domain.data.IvyWalletCache
 import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.data.core.Category
 import com.ivy.wallet.io.persistence.SharedPrefs
@@ -26,6 +28,20 @@ class IvyWalletCtx : IvyContext() {
 
     fun setStartDayOfMonth(day: Int) {
         startDayOfMonth = day
+    }
+
+    var cache: IvyWalletCache = IvyWalletCache(
+        accounts = emptyList(),
+        accountMap = emptyMap(),
+        categories = emptyList(),
+        categoryMap = emptyMap(),
+        rates = None,
+        settings = None
+    )
+        private set
+
+    fun updateCache(update: (IvyWalletCache) -> IvyWalletCache) {
+        cache = update(cache)
     }
 
     //---------------------- Optimization  ----------------------------

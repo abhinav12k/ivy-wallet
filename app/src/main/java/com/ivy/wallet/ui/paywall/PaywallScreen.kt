@@ -31,8 +31,8 @@ import com.ivy.wallet.domain.data.core.Category
 import com.ivy.wallet.domain.data.core.Loan
 import com.ivy.wallet.ui.IvyWalletPreview
 import com.ivy.wallet.ui.Paywall
-import com.ivy.wallet.ui.RootActivity
 import com.ivy.wallet.ui.ivyWalletCtx
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.ui.theme.*
 import com.ivy.wallet.ui.theme.components.BackButtonType
 import com.ivy.wallet.ui.theme.components.IvyIcon

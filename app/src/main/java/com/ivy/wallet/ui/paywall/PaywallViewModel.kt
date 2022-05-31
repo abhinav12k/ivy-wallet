@@ -19,7 +19,7 @@ import com.ivy.wallet.domain.data.core.Loan
 import com.ivy.wallet.domain.deprecated.logic.PaywallLogic
 import com.ivy.wallet.io.network.IvyAnalytics
 import com.ivy.wallet.ui.Paywall
-import com.ivy.wallet.ui.RootActivity
+import com.ivy.wallet.ui.root.RootActivity
 import com.ivy.wallet.utils.asLiveData
 import com.ivy.wallet.utils.sendToCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
