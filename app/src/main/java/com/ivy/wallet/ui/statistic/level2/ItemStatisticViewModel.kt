@@ -205,7 +205,7 @@ class ItemStatisticViewModel @Inject constructor(
             accountDao.findById(accountId)?.toDomain() ?: error("account not found")
         }
         _account.value = account
-        val range = period.value.toRange(ivyContext.startDayOfMonth)
+        val range = period.value.toRange(ivyContext.cache.startDayOfMonth)
 
         if (account.currency.isNotNullOrBlank()) {
             _currency.value = account.currency!!
@@ -285,7 +285,7 @@ class ItemStatisticViewModel @Inject constructor(
             categoryDao.findById(categoryId)?.toDomain() ?: error("category not found")
         }
         _category.value = category
-        val range = period.value.toRange(ivyContext.startDayOfMonth)
+        val range = period.value.toRange(ivyContext.cache.startDayOfMonth)
 
         _balance.value = ioThread {
             categoryLogic.calculateCategoryBalance(category, range, accountFilterSet)
@@ -349,7 +349,7 @@ class ItemStatisticViewModel @Inject constructor(
                 categoryDao.findById(categoryId)?.toDomain() ?: error("category not found")
             }
             _category.value = category
-            val range = period.value.toRange(ivyContext.startDayOfMonth)
+            val range = period.value.toRange(ivyContext.cache.startDayOfMonth)
 
             val incomeTrans = transactions.filter {
                 it.categoryId == categoryId && it.type == TransactionType.INCOME
@@ -418,7 +418,7 @@ class ItemStatisticViewModel @Inject constructor(
     }
 
     private suspend fun initForUnspecifiedCategory() {
-        val range = period.value.toRange(ivyContext.startDayOfMonth)
+        val range = period.value.toRange(ivyContext.cache.startDayOfMonth)
 
         _balance.value = ioThread {
             categoryLogic.calculateUnspecifiedBalance(range)
@@ -468,8 +468,8 @@ class ItemStatisticViewModel @Inject constructor(
         _category.value = Category(stringRes(R.string.account_transfers), RedLight.toArgb(), "transfer")
         val accountFilterIdSet = accountFilterList.toHashSet()
         val trans = transactions.filter {
-            it.categoryId == null && (accountFilterIdSet.contains(it.accountId) || accountFilterIdSet.contains(
-                it.toAccountId
+            it.categoryId == null && (accountFilterIdSet.contains(it.account.id) || accountFilterIdSet.contains(
+                it.toAccount?.id
             )) && it.type == TransactionType.TRANSFER
         }
 

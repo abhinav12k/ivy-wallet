@@ -26,7 +26,7 @@ suspend fun exchangeInBaseCurrency(
     transaction: Transaction,
     arg: ExchangeTrnArgument
 ): BigDecimal {
-    val fromCurrency = arg.getAccount(transaction.accountId)?.let {
+    val fromCurrency = arg.getAccount(transaction.account.id)?.let {
         accountCurrency(it, arg.baseCurrency)
     }.toOption()
 
@@ -71,7 +71,7 @@ suspend fun exchangeInCurrency(
             fromCurrency = trnCurrency(transaction, accounts, baseCurrency),
             toCurrency = toCurrency
         ),
-        transaction.amount
+        transaction.amount.toBigDecimal()
     ).orNull() ?: BigDecimal.ZERO
 }
 
@@ -90,6 +90,6 @@ suspend fun exchangeInCurrency(
             fromCurrency = trnCurrency,
             toCurrency = toCurrency
         ),
-        transaction.amount
+        transaction.amount.toBigDecimal()
     ).orNull() ?: BigDecimal.ZERO
 }

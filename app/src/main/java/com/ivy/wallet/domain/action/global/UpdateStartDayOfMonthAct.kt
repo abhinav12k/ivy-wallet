@@ -22,7 +22,7 @@ class UpdateStartDayOfMonthAct @Inject constructor(
         }
     } thenIfSuccess { startDay ->
         sharedPrefs.putInt(SharedPrefs.START_DATE_OF_MONTH, startDay)
-        ivyWalletCtx.setStartDayOfMonth(startDay)
+        ivyWalletCtx.updateCache { it.copy(startDayOfMonth = startDay) }
         Res.Ok(startDay)
     } thenIfSuccess { startDay ->
         ivyWalletCtx.initSelectedPeriodInMemory(

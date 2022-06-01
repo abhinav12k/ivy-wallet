@@ -11,53 +11,38 @@ import com.ivy.frp.view.navigation.Navigation
 import com.ivy.wallet.BuildConfig
 import com.ivy.wallet.Constants
 import com.ivy.wallet.domain.data.IvyWalletCache
-import com.ivy.wallet.domain.data.core.Account
-import com.ivy.wallet.domain.data.core.Category
-import com.ivy.wallet.io.persistence.SharedPrefs
 import com.ivy.wallet.ui.main.MainTab
 import com.ivy.wallet.ui.onboarding.model.TimePeriod
 import com.ivy.wallet.ui.paywall.PaywallReason
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
 
 class IvyWalletCtx : IvyContext() {
     //------------------------------------------ State ---------------------------------------------
-    var startDayOfMonth = 1
+    var cache: IvyWalletCache = defaultCache()
         private set
 
-    fun setStartDayOfMonth(day: Int) {
-        startDayOfMonth = day
-    }
-
-    var cache: IvyWalletCache = IvyWalletCache(
+    private fun defaultCache(): IvyWalletCache = IvyWalletCache(
         accounts = emptyList(),
         accountMap = emptyMap(),
         categories = emptyList(),
         categoryMap = emptyMap(),
-        rates = None,
-        settings = None
+        exchangeRates = None,
+        settings = None,
+        baseCurrency = "",
+        startDayOfMonth = 1
     )
-        private set
 
+    @Synchronized
     fun updateCache(update: (IvyWalletCache) -> IvyWalletCache) {
         cache = update(cache)
     }
 
-    //---------------------- Optimization  ----------------------------
-    val categoryMap: MutableMap<UUID, Category> = mutableMapOf()
-    val accountMap: MutableMap<UUID, Account> = mutableMapOf()
-    //---------------------- Optimization  ----------------------------
-
-    @Deprecated("use StartDayOfMonthAct")
-    fun initStartDayOfMonthInMemory(sharedPrefs: SharedPrefs): Int {
-        startDayOfMonth = sharedPrefs.getInt(SharedPrefs.START_DATE_OF_MONTH, 1)
-        return startDayOfMonth
-    }
 
     var selectedPeriod: TimePeriod = TimePeriod.currentMonth(
-        startDayOfMonth = startDayOfMonth //this is default value
+        startDayOfMonth = cache.startDayOfMonth //this is default value
     )
+
     private var selectedPeriodInitialized = false
     fun initSelectedPeriodInMemory(
         startDayOfMonth: Int,
@@ -150,7 +135,7 @@ class IvyWalletCtx : IvyContext() {
     //Testing --------------------------------------------------------------------------------------
     fun reset() {
         mainTab = MainTab.HOME
-        startDayOfMonth = 1
+        cache = defaultCache()
         isPremium = true
         transactionsListState = null
     }

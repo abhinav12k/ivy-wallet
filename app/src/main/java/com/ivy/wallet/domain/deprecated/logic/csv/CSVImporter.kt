@@ -213,13 +213,13 @@ class CSVImporter(
             Transaction(
                 id = id,
                 type = type,
-                amount = amount.toBigDecimal(),
-                accountId = account.id,
-                toAccountId = toAccount?.id,
-                toAmount = toAmount?.toBigDecimal() ?: amount.toBigDecimal(),
+                amount = amount,
+                account = account,
+                toAccount = toAccount,
+                toAmount = toAmount ?: amount,
                 dateTime = dateTime,
                 dueDate = dueDate,
-                categoryId = category?.id,
+                category = category,
                 title = title,
                 description = description
             ),

@@ -12,15 +12,15 @@ object AccountValueFunctions {
         transaction: Transaction,
         accountId: UUID
     ): BigDecimal = with(transaction) {
-        if (this.accountId == accountId) {
+        if (this.account.id == accountId) {
             //Account's transactions
             when (type) {
                 TransactionType.INCOME -> amount
-                TransactionType.EXPENSE -> amount.negate()
+                TransactionType.EXPENSE -> amount.toBigDecimal().negate()
                 TransactionType.TRANSFER -> {
-                    if (toAccountId != accountId) {
+                    if (toAccount?.id != accountId) {
                         //transfer to another account
-                        amount.negate()
+                        amount.toBigDecimal().negate()
                     } else {
                         //transfer to self
                         toAmount.minus(amount)
@@ -29,7 +29,7 @@ object AccountValueFunctions {
             }
         } else {
             //potential transfer to account?
-            toAccountId?.takeIf { it == accountId } ?: return BigDecimal.ZERO
+            toAccount?.id?.takeIf { it == accountId } ?: return BigDecimal.ZERO
             toAmount
         }
     }
@@ -38,7 +38,7 @@ object AccountValueFunctions {
         transaction: Transaction,
         accountId: UUID
     ): BigDecimal = with(transaction) {
-        if (this.accountId == accountId && type == TransactionType.INCOME)
+        if (this.account.id == accountId && type == TransactionType.INCOME)
             amount else BigDecimal.ZERO
     }
 
@@ -46,7 +46,7 @@ object AccountValueFunctions {
         transaction: Transaction,
         accountId: UUID
     ): BigDecimal = with(transaction) {
-        if (this.toAccountId == accountId && type == TransactionType.TRANSFER)
+        if (this.toAccount.Id == accountId && type == TransactionType.TRANSFER)
             toAmount else BigDecimal.ZERO
     }
 

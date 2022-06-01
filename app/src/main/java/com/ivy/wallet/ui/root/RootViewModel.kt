@@ -5,20 +5,26 @@ import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.viewModelScope
 import arrow.core.Some
 import com.ivy.design.l0_system.Theme
-import com.ivy.frp.test.TestIdlingResource
 import com.ivy.frp.then
+import com.ivy.frp.thenInvokeAfter
 import com.ivy.frp.view.navigation.Navigation
 import com.ivy.frp.viewmodel.FRPViewModel
 import com.ivy.wallet.Constants
 import com.ivy.wallet.R
+import com.ivy.wallet.domain.action.account.AccountsAct
+import com.ivy.wallet.domain.action.category.CategoriesAct
+import com.ivy.wallet.domain.action.global.LoadIvySessionAct
+import com.ivy.wallet.domain.action.global.StartDayOfMonthAct
+import com.ivy.wallet.domain.action.global.UpdateStartDayOfMonthCacheAct
 import com.ivy.wallet.domain.action.settings.SettingsAct
+import com.ivy.wallet.domain.action.settings.UpdateSettingsCacheAct
+import com.ivy.wallet.domain.action.viewmodel.home.UpdateAccCacheAct
+import com.ivy.wallet.domain.action.viewmodel.home.UpdateCategoriesCacheAct
+import com.ivy.wallet.domain.action.viewmodel.root.AppLockAct
 import com.ivy.wallet.domain.action.viewmodel.root.OnboardingCompletedAct
 import com.ivy.wallet.domain.data.TransactionType
 import com.ivy.wallet.domain.deprecated.logic.notification.TransactionReminderLogic
-import com.ivy.wallet.io.network.IvyAnalytics
-import com.ivy.wallet.io.network.IvySession
-import com.ivy.wallet.io.persistence.SharedPrefs
-import com.ivy.wallet.io.persistence.dao.SettingsDao
+import com.ivy.wallet.domain.deprecated.sync.IvySync
 import com.ivy.wallet.stringRes
 import com.ivy.wallet.ui.EditTransaction
 import com.ivy.wallet.ui.IvyWalletCtx
@@ -31,19 +37,27 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class RootViewModel @Inject constructor(
     private val ivyContext: IvyWalletCtx,
     private val nav: Navigation,
-    private val ivyAnalytics: IvyAnalytics,
-    private val settingsDao: SettingsDao,
-    private val sharedPrefs: SharedPrefs,
-    private val ivySession: IvySession,
+
     private val transactionReminderLogic: TransactionReminderLogic,
+    private val ivySync: IvySync,
 
     private val settingsAct: SettingsAct,
+    private val updateSettingsCacheAct: UpdateSettingsCacheAct,
     private val onboardingCompletedAct: OnboardingCompletedAct,
+    private val accountsAct: AccountsAct,
+    private val categoriesAct: CategoriesAct,
+    private val updateAccCacheAct: UpdateAccCacheAct,
+    private val updateCategoriesCacheAct: UpdateCategoriesCacheAct,
+    private val startDayOfMonthAct: StartDayOfMonthAct,
+    private val updateStartDayOfMonthCacheAct: UpdateStartDayOfMonthCacheAct,
+    private val appLockAct: AppLockAct,
+    private val loadIvySessionAct: LoadIvySessionAct,
 ) : FRPViewModel<RootState, RootEvent>() {
 
     override val _state: MutableStateFlow<RootState> = MutableStateFlow(
@@ -58,17 +72,69 @@ class RootViewModel @Inject constructor(
 
 
     override suspend fun handleEvent(event: RootEvent): suspend () -> RootState = when (event) {
-        is RootEvent.Start -> TODO()
-        is RootEvent.LoadTheme -> loadTheme(event)
+        is RootEvent.Start -> start(event)
         RootEvent.LockApp -> ::lockApp
         RootEvent.UnlockApp -> ::unlockApp
+        RootEvent.Internal.LoadTheme -> loadTheme()
     }
 
-    private fun startNew(event: RootEvent.Start) = suspend {
-
+    private fun start(event: RootEvent.Start) = suspend {
+        onEvent(RootEvent.Internal.LoadTheme) //load theme async
+    } then onboardingCompletedAct then { onboarded ->
+        if (onboarded) startForOnboarded(event) else startForNewUser()
+        stateVal()
     }
 
-    private fun loadTheme(event: RootEvent.LoadTheme) = suspend {
+    private fun startForOnboarded(event: RootEvent.Start) = suspend {
+        viewModelScope.launch {
+            awaitAll(
+                async {
+                    categoriesAct thenInvokeAfter updateCategoriesCacheAct
+                },
+                async {
+                    accountsAct thenInvokeAfter updateAccCacheAct
+                },
+                async {
+                    startDayOfMonthAct thenInvokeAfter updateStartDayOfMonthCacheAct
+                },
+                async {
+                    settingsAct thenInvokeAfter updateSettingsCacheAct
+                },
+            )
+        }
+    } then {
+        navigateOnboardedUser(event.intent) //navigate to HomeTab or to EditTransaction screen
+
+        viewModelScope.launch {
+            appLockAct thenInvokeAfter { appLocked ->
+                appLockEnabled = appLocked
+                updateState { it.copy(appLocked = appLocked) }
+            }
+        }
+
+        viewModelScope.launch {
+            delay(10.seconds)
+
+            ioThread {
+                //TODO: Refactor as action and defer because it's not important
+                transactionReminderLogic.scheduleReminder()
+            }
+        }
+
+        viewModelScope.launch {
+            delay(5.seconds)
+
+            loadIvySessionAct thenInvokeAfter {
+                ivySync.sync()
+            }
+        }
+    }
+
+    private fun startForNewUser() {
+        nav.navigateTo(Onboarding)
+    }
+
+    private fun loadTheme() = suspend {
         ivyContext.switchTheme(Theme.AUTO)
     } then settingsAct then { settings ->
         ivyContext.switchTheme(settings.theme) //update to the selected by the user theme
@@ -78,48 +144,9 @@ class RootViewModel @Inject constructor(
         stateVal()
     }
 
-    fun start(systemDarkMode: Boolean, intent: Intent) {
-        viewModelScope.launch {
-            TestIdlingResource.increment()
-
-            ioThread {
-                val theme = settingsDao.findAll().firstOrNull()?.theme
-                    ?: if (systemDarkMode) Theme.DARK else Theme.LIGHT
-                ivyContext.switchTheme(theme)
-
-                ivyContext.initStartDayOfMonthInMemory(sharedPrefs = sharedPrefs)
-            }
-
-            TestIdlingResource.decrement()
-        }
-
-        viewModelScope.launch {
-            TestIdlingResource.increment()
-
-            ioThread {
-                ivySession.loadFromCache()
-//                ivyAnalytics.loadSession()
-
-                appLockEnabled = sharedPrefs.getBoolean(SharedPrefs.APP_LOCK_ENABLED, false)
-                //initial app locked state
-                updateState { it.copy(appLocked = appLockEnabled) }
-
-                if (isOnboardingCompleted()) {
-                    navigateOnboardedUser(intent)
-                } else {
-                    nav.navigateTo(Onboarding)
-                }
-
-            }
-
-            TestIdlingResource.decrement()
-        }
-    }
-
     private fun navigateOnboardedUser(intent: Intent) {
         if (!handleSpecialStart(intent)) {
             nav.navigateTo(Main)
-            transactionReminderLogic.scheduleReminder()
         }
     }
 
@@ -166,33 +193,6 @@ class RootViewModel @Inject constructor(
         }
     }
 
-//    fun initBilling(activity: AppCompatActivity) {
-//        ivyBilling.init(
-//            activity = activity,
-//            onReady = {
-//                viewModelScope.launch {
-//                    val purchases = ivyBilling.queryPurchases()
-//                    paywallLogic.processPurchases(purchases)
-//                }
-//            },
-//            onPurchases = { purchases ->
-//                viewModelScope.launch {
-//                    paywallLogic.processPurchases(purchases)
-//                }
-//
-//            },
-//            onError = { code, msg ->
-//                sendToCrashlytics("IvyActivity Billing error: code=$code: $msg")
-//                Timber.e("Billing error code=$code: $msg")
-//            }
-//        )
-//    }
-
-    private fun isOnboardingCompleted(): Boolean {
-        return sharedPrefs.getBoolean(SharedPrefs.ONBOARDING_COMPLETED, false)
-    }
-
-
     //App Lock & UserInactivity --------------------------------------------------------------------
     fun isAppLockEnabled(): Boolean {
         return appLockEnabled
@@ -238,7 +238,7 @@ class RootViewModel @Inject constructor(
         }
     }
 
-    fun resetUserInactiveTimer() {
+    private fun resetUserInactiveTimer() {
         userInactiveTime.set(0)
     }
 }

@@ -371,7 +371,7 @@ private fun BoxWithConstraintsScope.UI(
                 emptyStateTitle = stringRes(R.string.no_transactions),
                 emptyStateText = stringRes(
                     R.string.no_transactions_for_period,
-                    period.toDisplayLong(ivyContext.startDayOfMonth)
+                    period.toDisplayLong(ivyContext.cache.startDayOfMonth)
                 )
             )
         }

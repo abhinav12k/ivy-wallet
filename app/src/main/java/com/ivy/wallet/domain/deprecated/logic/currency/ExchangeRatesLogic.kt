@@ -65,8 +65,8 @@ class ExchangeRatesLogic(
         accounts: List<Account> //helper
     ): Double {
         return amountBaseCurrency(
-            amount = transaction.amount.toDouble(),
-            accountId = transaction.accountId,
+            amount = transaction.amount,
+            accountId = transaction.account.id,
             baseCurrency = baseCurrency,
             accounts = accounts
         )

@@ -22,15 +22,10 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -39,6 +34,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.ivy.design.api.IvyUI
+import com.ivy.frp.view.FRP
 import com.ivy.frp.view.navigation.Navigation
 import com.ivy.frp.view.navigation.NavigationRoot
 import com.ivy.frp.view.navigation.Screen
@@ -136,18 +132,14 @@ class RootActivity : AppCompatActivity() {
         AddTransactionWidget.updateBroadcast(this)
 
         setContent {
-            val viewModel: RootViewModel = viewModel()
-            val isSystemInDarkTheme = isSystemInDarkTheme()
-
-            LaunchedEffect(isSystemInDarkTheme) {
-                viewModel.start(isSystemInDarkTheme, intent)
-//                viewModel.initBilling(this@RootActivity)
-            }
-
             IvyUI(
                 design = appDesign(ivyContext)
             ) {
-                UI(viewModel)
+                FRP<RootState, RootEvent, RootViewModel>(
+                    initialEvent = RootEvent.Start(intent)
+                ) { state, onEvent ->
+                    UI(state, onEvent)
+                }
             }
         }
     }
@@ -155,10 +147,12 @@ class RootActivity : AppCompatActivity() {
     @ExperimentalFoundationApi
     @ExperimentalAnimationApi
     @Composable
-    private fun BoxWithConstraintsScope.UI(viewModel: RootViewModel) {
-        val appLocked by viewModel.appLocked.collectAsState()
+    private fun BoxWithConstraintsScope.UI(
+        state: RootState,
 
-        when (appLocked) {
+        onEvent: (RootEvent) -> Unit
+    ) {
+        when (state.appLocked) {
             null -> {
                 //display nothing
             }
@@ -170,7 +164,7 @@ class RootActivity : AppCompatActivity() {
                         )
                     },
                     onContinueWithoutAuthentication = {
-                        viewModel.unlockApp()
+                        onEvent(RootEvent.UnlockApp)
                     }
                 )
             }

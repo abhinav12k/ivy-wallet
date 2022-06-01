@@ -97,7 +97,7 @@ class LoanTransactionsCore(
                 loanType = loanType,
                 selectedAccountId = selectedAccountId,
                 title = title ?: transaction.title,
-                categoryId = category?.id ?: transaction.categoryId,
+                categoryId = category?.id ?: transaction.category?.id,
                 time = time ?: transaction.dateTime ?: timeNowUTC(),
                 isLoanRecord = isLoanRecord,
                 transaction = transaction
@@ -142,30 +142,31 @@ class LoanTransactionsCore(
 
         val transCategoryId: UUID? = getCategoryId(existingCategoryId = categoryId)
 
-        val modifiedTransaction: Transaction = transaction?.copy(
-            loanId = loanId,
-            loanRecordId = if (isLoanRecord) loanRecordId else null,
-            amount = amount.toBigDecimal(),
-            type = transType,
-            accountId = selectedAccountId,
-            title = title,
-            categoryId = transCategoryId,
-            dateTime = time
-        )
-            ?: Transaction(
-                accountId = selectedAccountId,
-                type = transType,
-                amount = amount.toBigDecimal(),
-                dateTime = time,
-                categoryId = transCategoryId,
-                title = title,
-                loanId = loanId,
-                loanRecordId = if (isLoanRecord) loanRecordId else null
-            )
-
-        ioThread {
-            transactionDao.save(modifiedTransaction.toEntity())
-        }
+        //TODO: Vishwa, can you fix what I've broken pls? :D
+//        val modifiedTransaction: Transaction = transaction?.copy(
+//            loanId = loanId,
+//            loanRecordId = if (isLoanRecord) loanRecordId else null,
+//            amount = amount.toBigDecimal(),
+//            type = transType,
+//            accountId = selectedAccountId,
+//            title = title,
+//            categoryId = transCategoryId,
+//            dateTime = time
+//        )
+//            ?: Transaction(
+//                accountId = selectedAccountId,
+//                type = transType,
+//                amount = amount.toBigDecimal(),
+//                dateTime = time,
+//                categoryId = transCategoryId,
+//                title = title,
+//                loanId = loanId,
+//                loanRecordId = if (isLoanRecord) loanRecordId else null
+//            )
+//
+//        ioThread {
+//            transactionDao.save(modifiedTransaction.toEntity())
+//        }
     }
 
     private suspend fun deleteTransaction(transaction: Transaction?) {

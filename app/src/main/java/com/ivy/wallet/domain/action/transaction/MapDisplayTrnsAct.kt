@@ -19,14 +19,14 @@ class MapDisplayTrnsAct @Inject constructor(
         transactions.lambda() thenMap {
             DisplayTransaction(
                 account = account(
-                    accountId = it.accountId,
-                    accountMap = ivyWalletCtx.accountMap,
+                    accountId = it.account.id,
+                    accountMap = ivyWalletCtx.cache.accountMap,
                     accounts = accounts
                 ),
                 type = it.type,
                 amount = it.amount,
                 toAccount = account(
-                    accountId = it.toAccountId,
+                    accountId = it.toAccount?.id,
                     accountMap = ivyWalletCtx.accountMap,
                     accounts = accounts
                 ),

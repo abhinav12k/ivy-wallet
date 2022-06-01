@@ -69,8 +69,8 @@ class CategoriesViewModel @Inject constructor(
     private suspend fun initialise() {
         ioThread {
             val range = TimePeriod.currentMonth(
-                startDayOfMonth = ivyContext.startDayOfMonth
-            ).toRange(ivyContext.startDayOfMonth) //this must be monthly
+                startDayOfMonth = ivyContext.cache.startDayOfMonth
+            ).toRange(ivyContext.cache.startDayOfMonth) //this must be monthly
 
             allAccounts = accountsAct(Unit)
             baseCurrency = baseCurrencyAct(Unit)

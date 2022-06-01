@@ -66,7 +66,7 @@ class WalletCategoryLogic(
                 endDate = range.to()
             ).map { it.toDomain() }
             .filter {
-                accountFilterSet.isEmpty() || accountFilterSet.contains(it.accountId)
+                accountFilterSet.isEmpty() || accountFilterSet.contains(it.account.id)
             }
             .sumInBaseCurrency(
                 exchangeRatesLogic = exchangeRatesLogic,
@@ -81,7 +81,7 @@ class WalletCategoryLogic(
     ): Double {
         return incomeTransaction
             .filter {
-                accountFilterSet.isEmpty() || accountFilterSet.contains(it.accountId)
+                accountFilterSet.isEmpty() || accountFilterSet.contains(it.account.id)
             }
             .sumInBaseCurrency(
                 exchangeRatesLogic = exchangeRatesLogic,
@@ -119,7 +119,7 @@ class WalletCategoryLogic(
     ): Double {
         return expenseTransactions
             .filter {
-                accountFilterSet.isEmpty() || accountFilterSet.contains(it.accountId)
+                accountFilterSet.isEmpty() || accountFilterSet.contains(it.account.id)
             }
             .sumInBaseCurrency(
                 exchangeRatesLogic = exchangeRatesLogic,
@@ -169,7 +169,7 @@ class WalletCategoryLogic(
     ): List<TransactionHistoryItem> {
         return historyByCategory(category, range, transactions = transactions)
             .filter {
-                accountFilterSet.isEmpty() || accountFilterSet.contains(it.accountId)
+                accountFilterSet.isEmpty() || accountFilterSet.contains(it.account.id)
             }
             .withDateDividers(
                 exchangeRatesLogic = exchangeRatesLogic,
@@ -195,7 +195,7 @@ class WalletCategoryLogic(
         }
 
         return trans.filter {
-            accountFilterSet.isEmpty() || accountFilterSet.contains(it.accountId)
+            accountFilterSet.isEmpty() || accountFilterSet.contains(it.account.id)
         }
     }
 

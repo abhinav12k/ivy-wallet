@@ -150,7 +150,7 @@ class PieChartAct @Inject constructor(
             val categoryTransactions = asyncIo {
                 if (addAssociatedTransToCategoryAmt)
                     trans.filter {
-                        it.type == type && it.categoryId == category?.id
+                        it.type == type && it.category?.id == category?.id
                     }
                 else
                     emptyList()
@@ -242,12 +242,12 @@ class PieChartAct @Inject constructor(
                     incExpQuad.transferExpense.toDouble()
 
                 val categoryTrans = transactions().filter {
-                    it.type == TransactionType.TRANSFER && it.categoryId == null
+                    it.type == TransactionType.TRANSFER && it.category?.id == null
                 }.filter {
                     if (type == TransactionType.EXPENSE)
-                        accountIdFilterSet.contains(it.accountId)
+                        accountIdFilterSet.contains(it.account.id)
                     else
-                        accountIdFilterSet.contains(it.toAccountId)
+                        accountIdFilterSet.contains(it.toAccount?.id)
                 }
 
                 categoryAmounts then {

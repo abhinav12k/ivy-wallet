@@ -16,7 +16,7 @@ class TrnsWithRangeAndAccFiltersAct @Inject constructor(
         transactionDao.findAllBetween(range.from(), range.to())
             .map { it.toDomain() }
     } thenFilter {
-        accountIdFilterSet.contains(it.accountId) || accountIdFilterSet.contains(it.toAccountId)
+        accountIdFilterSet.contains(it.account.id) || accountIdFilterSet.contains(it.toAccount?.id)
     }
 
     data class Input(

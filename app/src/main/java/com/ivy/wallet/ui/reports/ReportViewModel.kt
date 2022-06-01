@@ -218,7 +218,7 @@ class ReportViewModel @Inject constructor(
         val filterAccountIds = filter.accounts.map { it.id }
         val filterCategoryIds =
             filter.categories.map { if (it.id == unSpecifiedCategory.id) null else it.id }
-        val filterRange = filter.period?.toRange(ivyContext.startDayOfMonth)
+        val filterRange = filter.period?.toRange(ivyContext.cache.startDayOfMonth)
 
         return transactionDao
             .findAll()

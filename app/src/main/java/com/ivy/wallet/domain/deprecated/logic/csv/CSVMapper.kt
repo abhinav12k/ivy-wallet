@@ -237,14 +237,19 @@ class CSVMapper {
                                 id = t.id,
                                 type = TransactionType.TRANSFER,
                                 amount = t.amount,
-                                accountId = t.accountId,
-                                toAccountId = t2.accountId,
+                                account = t.account,
+                                toAccount = t2.account,
                                 toAmount = t2.amount,
                                 dateTime = t.dateTime,
                                 dueDate = t.dueDate,
-                                categoryId = t.categoryId,
+                                category = t.category,
                                 title = t.title,
-                                description = t.description
+                                description = t.description,
+
+                                attachmentUrl = null,
+                                recurringRuleId = null,
+                                loanId = null,
+                                loanRecordId = null
                             )
                             mergedCount++
                             add(new)

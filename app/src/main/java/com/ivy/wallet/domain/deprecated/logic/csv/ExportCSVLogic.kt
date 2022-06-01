@@ -98,15 +98,15 @@ class ExportCSVLogic(
         }
 
         //Category
-        csv.appendValue(categoryId) {
+        csv.appendValue(category?.id) {
             append(categoryMap[it]?.name?.escapeCSVString() ?: it)
         }
 
-        val account = accountMap[accountId]
+        val account = accountMap[account.id]
         val currency = account?.currency ?: baseCurrency
 
         //Account
-        csv.appendValue(accountId) {
+        csv.appendValue(account?.id) {
             append(account?.name?.escapeCSVString() ?: it)
         }
 
@@ -141,11 +141,11 @@ class ExportCSVLogic(
         }
 
         //To Account
-        csv.appendValue(toAccountId) {
+        csv.appendValue(toAccount?.id) {
             append(accountMap[it]?.name?.escapeCSVString() ?: it)
         }
 
-        val receiveCurrency = toAccountId?.let { accountMap[it]?.currency ?: baseCurrency }
+        val receiveCurrency = toAccount?.id?.let { accountMap[it]?.currency ?: baseCurrency }
         //Receive Amount
         csv.appendValue(toAmount) {
             append(it.toDouble().formatAmountCSV(receiveCurrency ?: baseCurrency))
@@ -172,47 +172,47 @@ class ExportCSVLogic(
         }
 
         //Account Color
-        csv.appendValue(accountMap[accountId]?.color) {
+        csv.appendValue(accountMap[account?.id]?.color) {
             append(it)
         }
 
         //Account orderNum
-        csv.appendValue(accountMap[accountId]?.orderNum) {
+        csv.appendValue(accountMap[account?.id]?.orderNum) {
             append(it)
         }
 
         //Category Color
-        csv.appendValue(categoryId?.let { categoryMap[it]?.color }) {
+        csv.appendValue(category?.id?.let { categoryMap[it]?.color }) {
             append(it)
         }
 
         // Category orderNum
-        csv.appendValue(categoryId?.let { categoryMap[it]?.orderNum }) {
+        csv.appendValue(category?.id?.let { categoryMap[it]?.orderNum }) {
             append(it)
         }
 
         //To Account Color
-        csv.appendValue(toAccountId?.let { accountMap[it]?.color }) {
+        csv.appendValue(toAccount?.id?.let { accountMap[it]?.color }) {
             append(it)
         }
 
         //To Account orderNum
-        csv.appendValue(toAccountId?.let { accountMap[it]?.orderNum }) {
+        csv.appendValue(toAccount?.id?.let { accountMap[it]?.orderNum }) {
             append(it)
         }
 
         //Account Icon
-        csv.appendValue(accountMap[accountId]?.icon) {
+        csv.appendValue(accountMap[account?.id]?.icon) {
             append(it)
         }
 
         //Category Icon
-        csv.appendValue(categoryId?.let { categoryMap[it]?.icon }) {
+        csv.appendValue(category?.id?.let { categoryMap[it]?.icon }) {
             append(it)
         }
 
         //To Account Icon
-        csv.appendValue(toAccountId?.let { accountMap[it]?.icon }) {
+        csv.appendValue(toAccount?.id?.let { accountMap[it]?.icon }) {
             append(it)
         }
 

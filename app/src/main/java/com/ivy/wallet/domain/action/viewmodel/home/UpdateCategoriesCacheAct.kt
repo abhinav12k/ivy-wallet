@@ -11,8 +11,12 @@ class UpdateCategoriesCacheAct @Inject constructor(
     override suspend fun List<Category>.compose(): suspend () -> List<Category> = suspend {
         val categories = this
 
-        ivyWalletCtx.categoryMap.clear()
-        ivyWalletCtx.categoryMap.putAll(categories.map { it.id to it })
+        ivyWalletCtx.updateCache { cache ->
+            cache.copy(
+                categories = categories,
+                categoryMap = categories.associateBy { it.id }
+            )
+        }
 
         categories
     }

@@ -113,7 +113,7 @@ class HomeViewModel @Inject constructor(
         //This method is used to restore the theme when user imports locally backed up data
         ivyContext.switchTheme(theme = settings.theme)
 
-        Pair(settings, period.toRange(ivyContext.startDayOfMonth).toCloseTimeRange())
+        Pair(settings, period.toRange(ivyContext.cache.startDayOfMonth).toCloseTimeRange())
     } then ::loadAppBaseData then ::loadIncomeExpenseBalance then
             ::loadBuffer then ::loadTrnHistory then
             ::loadDueTrns thenInvokeAfter ::loadCustomerJourney

@@ -11,9 +11,12 @@ class UpdateAccCacheAct @Inject constructor(
     override suspend fun List<Account>.compose(): suspend () -> List<Account> = suspend {
         val accounts = this
 
-        ivyWalletCtx.accountMap.clear()
-        ivyWalletCtx.accountMap.putAll(accounts.map { it.id to it })
-
+        ivyWalletCtx.updateCache { cache ->
+            cache.copy(
+                accounts = accounts,
+                accountMap = accounts.associateBy { it.id }
+            )
+        }
         accounts
     }
 }

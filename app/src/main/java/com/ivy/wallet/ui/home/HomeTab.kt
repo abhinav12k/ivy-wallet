@@ -341,7 +341,7 @@ fun HomeLazyColumn(
             emptyStateTitle = stringRes(R.string.no_transactions),
             emptyStateText = stringRes(
                 R.string.no_transactions_description,
-                period.toDisplayLong(ivyContext.startDayOfMonth)
+                period.toDisplayLong(ivyContext.cache.startDayOfMonth)
             ),
             onSkipTransaction = onSkipTransaction,
             onSkipAllTransactions = onSkipAllTransactions

@@ -5,8 +5,11 @@ import android.content.Intent
 sealed class RootEvent {
 
     data class Start(val intent: Intent) : RootEvent()
-    data class LoadTheme(val isSystemInDarkMode: Boolean) : RootEvent()
 
     object LockApp : RootEvent()
     object UnlockApp : RootEvent()
+
+    sealed class Internal {
+        object LoadTheme : RootEvent()
+    }
 }

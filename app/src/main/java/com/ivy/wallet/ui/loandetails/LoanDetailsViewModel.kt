@@ -116,7 +116,7 @@ class LoanDetailsViewModel @Inject constructor(
 
                         val account = findAccount(
                             accounts = accounts.value,
-                            accountId = it.accountId,
+                            accountId = it.account.id,
                         )
 
                         DisplayLoanRecord(
@@ -167,7 +167,7 @@ class LoanDetailsViewModel @Inject constructor(
 
             _loan.value?.let {
                 loanTransactionsLogic.Loan.recalculateLoanRecords(
-                    oldLoanAccountId = it.accountId,
+                    oldLoanAccountId = it.account.id,
                     newLoanAccountId = loan.accountId,
                     loanId = loan.id
                 )

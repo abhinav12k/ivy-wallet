@@ -69,9 +69,9 @@ class AccountsViewModel @Inject constructor(
         TestIdlingResource.increment()
 
         val period = TimePeriod.currentMonth(
-            startDayOfMonth = ivyContext.startDayOfMonth
+            startDayOfMonth = ivyContext.cache.startDayOfMonth
         ) //this must be monthly
-        val range = period.toRange(ivyContext.startDayOfMonth)
+        val range = period.toRange(ivyContext.cache.startDayOfMonth)
 
         val baseCurrencyCode = baseCurrencyAct(Unit)
         val accs = accountsAct(Unit)

@@ -134,7 +134,7 @@ class BudgetViewModel @Inject constructor(
         val categoryFilter = budget.parseCategoryIds()
 
         return transactions
-            .filter { accountsFilter.isEmpty() || accountsFilter.contains(it.accountId) }
+            .filter { accountsFilter.isEmpty() || accountsFilter.contains(it.account.id) }
             .filter { categoryFilter.isEmpty() || categoryFilter.contains(it.categoryId) }
             .sumOfSuspend {
                 when (it.type) {

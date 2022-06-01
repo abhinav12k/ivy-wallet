@@ -16,12 +16,12 @@ class CategoryIncomeWithAccountFiltersAct @Inject constructor(
     override suspend fun Input.compose(): suspend () -> IncomeExpenseTransferPair = suspend {
         val accountFilterSet = accountFilterList.map { it.id }.toHashSet()
         transactions.filter {
-            it.categoryId == category?.id
+            it.category?.id == category?.id
         }.filter {
             if (accountFilterSet.isEmpty())
                 true
             else
-                accountFilterSet.contains(it.accountId)
+                accountFilterSet.contains(it.account.id)
         }
     } then {
         CalcTrnsIncomeExpenseAct.Input(

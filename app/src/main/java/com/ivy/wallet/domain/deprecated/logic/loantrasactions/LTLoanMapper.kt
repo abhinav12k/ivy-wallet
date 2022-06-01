@@ -94,7 +94,7 @@ class LTLoanMapper(
             if (accountsChanged) {
                 val newLoanRecords: List<LoanRecord> = calculateLoanRecords(
                     loanId = transaction.loanId,
-                    newAccountId = transaction.accountId
+                    newAccountId = transaction.account.id
                 )
                 ltCore.saveLoanRecords(newLoanRecords)
             }
@@ -103,7 +103,7 @@ class LTLoanMapper(
                 amount = transaction.amount.toDouble(),
                 name = if (transaction.title.isNullOrEmpty()) loan.name else transaction.title,
                 type = if (transaction.type == TransactionType.INCOME) LoanType.BORROW else LoanType.LEND,
-                accountId = transaction.accountId
+                accountId = transaction.account.id
             )
 
             ltCore.saveLoan(modifiedLoan.toDomain())

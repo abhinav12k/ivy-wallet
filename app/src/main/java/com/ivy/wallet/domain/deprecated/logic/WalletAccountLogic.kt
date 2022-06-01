@@ -7,6 +7,7 @@ import com.ivy.wallet.domain.deprecated.logic.currency.ExchangeRatesLogic
 import com.ivy.wallet.io.persistence.dao.AccountDao
 import com.ivy.wallet.io.persistence.dao.SettingsDao
 import com.ivy.wallet.io.persistence.dao.TransactionDao
+import com.ivy.wallet.io.persistence.data.TransactionEntity
 import com.ivy.wallet.ui.onboarding.model.FromToTimeRange
 import com.ivy.wallet.ui.onboarding.model.filterOverdue
 import com.ivy.wallet.ui.onboarding.model.filterUpcoming
@@ -41,29 +42,29 @@ class WalletAccountLogic(
             finalDiff < 0 -> {
                 //add income
                 transactionDao.save(
-                    Transaction(
+                    TransactionEntity(
                         type = TransactionType.INCOME,
                         title = adjustTransactionTitle,
-                        amount = diff.absoluteValue.toBigDecimal(),
-                        toAmount = diff.absoluteValue.toBigDecimal(),
+                        amount = diff.absoluteValue,
+                        toAmount = diff.absoluteValue,
                         dateTime = timeNowUTC(),
                         accountId = account.id,
                         isSynced = trnIsSyncedFlag
-                    ).toEntity()
+                    )
                 )
             }
             finalDiff > 0 -> {
                 //add expense
                 transactionDao.save(
-                    Transaction(
+                    TransactionEntity(
                         type = TransactionType.EXPENSE,
                         title = adjustTransactionTitle,
-                        amount = diff.absoluteValue.toBigDecimal(),
-                        toAmount = diff.absoluteValue.toBigDecimal(),
+                        amount = diff.absoluteValue,
+                        toAmount = diff.absoluteValue,
                         dateTime = timeNowUTC(),
                         accountId = account.id,
                         isSynced = trnIsSyncedFlag
-                    ).toEntity()
+                    )
                 )
             }
         }

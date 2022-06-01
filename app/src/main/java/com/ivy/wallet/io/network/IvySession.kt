@@ -12,10 +12,9 @@ class IvySession(
     private var userId: UUID? = null
     private var authToken: String? = null
 
-    fun loadFromCache() {
-        userId = sharedPrefs.getString(SharedPrefs.SESSION_USER_ID, null)
-            ?.let { UUID.fromString(it) }
-        authToken = sharedPrefs.getString(SharedPrefs.SESSION_AUTH_TOKEN, null)
+    fun loadSession(userId: UUID?, authToken: String?) {
+        this.userId = userId
+        this.authToken = authToken
     }
 
     fun getSessionToken() = authToken ?: throw NoSessionException()

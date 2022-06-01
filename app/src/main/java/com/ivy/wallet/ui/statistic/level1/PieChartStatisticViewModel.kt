@@ -99,7 +99,7 @@ class PieChartStatisticViewModel @Inject constructor(
         val accountIdFilterList = stateVal().accountIdFilterList
         val transactions = stateVal().transactions
         val baseCurrency = stateVal().baseCurrency
-        val range = period.toRange(ivyContext.startDayOfMonth)
+        val range = period.toRange(ivyContext.cache.startDayOfMonth)
 
         val treatTransferAsIncExp =
             sharedPrefs.getBoolean(

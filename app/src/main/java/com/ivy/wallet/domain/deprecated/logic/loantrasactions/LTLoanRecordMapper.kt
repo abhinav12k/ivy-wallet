@@ -74,8 +74,8 @@ class LTLoanRecordMapper(
                 oldLoanRecordAccountId = loanRecord.accountId,
                 oldLonRecordConvertedAmount = loanRecord.convertedAmount,
                 oldLoanRecordAmount = loanRecord.amount,
-                newLoanRecordAccountID = transaction.accountId,
-                newLoanRecordAmount = transaction.amount.toDouble(),
+                newLoanRecordAccountID = transaction.account.id,
+                newLoanRecordAmount = transaction.amount,
                 loanAccountId = loan.accountId,
                 accounts = ltCore.fetchAccounts().map { it.toDomain() }
             )
@@ -84,7 +84,7 @@ class LTLoanRecordMapper(
                 amount = transaction.amount.toDouble(),
                 note = transaction.title,
                 dateTime = transaction.dateTime ?: loanRecord.dateTime,
-                accountId = transaction.accountId,
+                accountId = transaction.account.id,
                 convertedAmount = convertedAmount
             )
             ltCore.saveLoanRecords(modifiedLoanRecord.toDomain())

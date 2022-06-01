@@ -1,8 +1,8 @@
 package com.ivy.wallet.domain.deprecated.logic
 
 import com.ivy.wallet.domain.data.core.PlannedPaymentRule
-import com.ivy.wallet.domain.data.core.Transaction
 import com.ivy.wallet.io.persistence.dao.TransactionDao
+import com.ivy.wallet.io.persistence.data.TransactionEntity
 import java.time.LocalDateTime
 
 @Deprecated("Migrate to FP Style")
@@ -71,12 +71,12 @@ class PlannedPaymentsGenerator(
 
     private suspend fun generateTransaction(rule: PlannedPaymentRule, dueDate: LocalDateTime) {
         transactionDao.save(
-            Transaction(
+            TransactionEntity(
                 type = rule.type,
                 accountId = rule.accountId,
                 recurringRuleId = rule.id,
                 categoryId = rule.categoryId,
-                amount = rule.amount.toBigDecimal(),
+                amount = rule.amount,
                 title = rule.title,
                 description = rule.description,
                 dueDate = dueDate,
@@ -84,7 +84,7 @@ class PlannedPaymentsGenerator(
                 toAccountId = null,
 
                 isSynced = false
-            ).toEntity()
+            )
         )
     }
 
