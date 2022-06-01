@@ -29,6 +29,7 @@ import com.ivy.wallet.utils.toEpochMilli
 import com.ivy.wallet.utils.toEpochSeconds
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -83,7 +84,7 @@ abstract class IvyComposeTest {
     }
 
     @After
-    fun tearDown() {
+    fun tearDown() = runBlocking {
         resetTestIdling()
 
         TestingContext.inTest = false
@@ -97,7 +98,7 @@ abstract class IvyComposeTest {
         }
     }
 
-    private fun resetApp() {
+    private suspend fun resetApp() {
         clearSharedPrefs()
         resetDatabase()
         resetIvyContext()
@@ -112,7 +113,7 @@ abstract class IvyComposeTest {
         ivyRoomDatabase.reset()
     }
 
-    private fun resetIvyContext() {
+    private suspend fun resetIvyContext() {
         ivyContext.reset()
         navigation.reset()
     }
@@ -126,7 +127,7 @@ abstract class IvyComposeTest {
         maxAttempts: Int = 3,
         firstFailure: Throwable? = null,
         test: () -> Unit
-    ) {
+    ): Unit = runBlocking {
         try {
             test()
         } catch (e: Throwable) {

@@ -79,6 +79,7 @@ class RootViewModel @Inject constructor(
     }
 
     private fun start(event: RootEvent.Start) = suspend {
+        ivyContext.initCache()
         onEvent(RootEvent.Internal.LoadTheme) //load theme async
     } then onboardingCompletedAct then { onboarded ->
         if (onboarded) startForOnboarded(event) else startForNewUser()

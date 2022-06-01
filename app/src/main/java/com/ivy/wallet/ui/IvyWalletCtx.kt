@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import arrow.core.None
+import arrow.fx.stm.TVar
+import arrow.fx.stm.atomically
 import com.ivy.design.IvyContext
 import com.ivy.frp.view.navigation.Navigation
 import com.ivy.wallet.BuildConfig
@@ -19,8 +21,11 @@ import java.time.LocalTime
 
 class IvyWalletCtx : IvyContext() {
     //------------------------------------------ State ---------------------------------------------
-    var cache: IvyWalletCache = defaultCache()
-        private set
+    lateinit var cache: TVar<IvyWalletCache>
+
+    suspend fun initCache() {
+        cache = TVar.new(defaultCache())
+    }
 
     private fun defaultCache(): IvyWalletCache = IvyWalletCache(
         accounts = emptyList(),
@@ -33,14 +38,15 @@ class IvyWalletCtx : IvyContext() {
         startDayOfMonth = 1
     )
 
-    @Synchronized
-    fun updateCache(update: (IvyWalletCache) -> IvyWalletCache) {
-        cache = update(cache)
+    suspend fun updateCache(update: (IvyWalletCache) -> IvyWalletCache) {
+        atomically {
+            cache.write(update(cache.read()))
+        }
     }
 
 
     var selectedPeriod: TimePeriod = TimePeriod.currentMonth(
-        startDayOfMonth = cache.startDayOfMonth //this is default value
+        startDayOfMonth = 1 //this is default value
     )
 
     private var selectedPeriodInitialized = false
@@ -133,9 +139,11 @@ class IvyWalletCtx : IvyContext() {
     lateinit var openFile: (onOpened: (Uri) -> Unit) -> Unit
 
     //Testing --------------------------------------------------------------------------------------
-    fun reset() {
+    suspend fun reset() {
         mainTab = MainTab.HOME
-        cache = defaultCache()
+        atomically {
+            cache.write(defaultCache())
+        }
         isPremium = true
         transactionsListState = null
     }
