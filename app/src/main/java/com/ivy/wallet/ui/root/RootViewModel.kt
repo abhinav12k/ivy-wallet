@@ -13,6 +13,7 @@ import com.ivy.wallet.Constants
 import com.ivy.wallet.R
 import com.ivy.wallet.domain.action.account.AccountsAct
 import com.ivy.wallet.domain.action.category.CategoriesAct
+import com.ivy.wallet.domain.action.exchange.SyncExchangeRatesAct
 import com.ivy.wallet.domain.action.global.LoadIvySessionAct
 import com.ivy.wallet.domain.action.global.StartDayOfMonthAct
 import com.ivy.wallet.domain.action.global.UpdateStartDayOfMonthCacheAct
@@ -58,6 +59,7 @@ class RootViewModel @Inject constructor(
     private val updateStartDayOfMonthCacheAct: UpdateStartDayOfMonthCacheAct,
     private val appLockAct: AppLockAct,
     private val loadIvySessionAct: LoadIvySessionAct,
+    private val syncExchangeRatesAct: SyncExchangeRatesAct
 ) : FRPViewModel<RootState, RootEvent>() {
 
     override val _state: MutableStateFlow<RootState> = MutableStateFlow(
@@ -125,9 +127,11 @@ class RootViewModel @Inject constructor(
         viewModelScope.launch {
             delay(5.seconds)
 
-            loadIvySessionAct thenInvokeAfter {
+            val sync = loadIvySessionAct then {
                 ivySync.sync()
-            }
+                SyncExchangeRatesAct.Input(ivyContext.cache.unsafeRead().baseCurrency)
+            } then syncExchangeRatesAct
+            sync(Unit)
         }
     }
 

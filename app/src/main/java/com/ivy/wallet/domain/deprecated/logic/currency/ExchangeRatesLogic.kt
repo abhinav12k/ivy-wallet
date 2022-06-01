@@ -72,21 +72,6 @@ class ExchangeRatesLogic(
         )
     }
 
-    suspend fun toAmountBaseCurrency(
-        transaction: Transaction,
-        baseCurrency: String,
-        accounts: List<Account> //helper
-    ): Double {
-        val amount = transaction.toAmount ?: transaction.amount
-        val toCurrency = accounts.find { it.id == transaction.toAccountId }?.currency
-            ?: return amount.toDouble() // no conversion
-
-        return amountBaseCurrency(
-            amount = amount.toDouble(),
-            amountCurrency = toCurrency,
-            baseCurrency = baseCurrency
-        )
-    }
 
     private suspend fun amountBaseCurrency(
         amount: Double,
