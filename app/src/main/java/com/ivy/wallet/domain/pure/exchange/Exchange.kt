@@ -9,7 +9,7 @@ import com.ivy.frp.Pure
 import com.ivy.frp.SideEffect
 import com.ivy.wallet.domain.data.core.ExchangeRate
 import com.ivy.wallet.utils.isNotNullOrBlank
-import java.math.BigDecimal
+
 
 data class ExchangeData(
     val baseCurrency: String,
@@ -21,13 +21,13 @@ data class ExchangeData(
 @Pure
 suspend fun exchange(
     data: ExchangeData,
-    amount: BigDecimal,
+    amount: Double,
 
     @SideEffect
     getExchangeRate: suspend (baseCurrency: String, toCurrency: String) -> ExchangeRate?,
-): Option<BigDecimal> = option {
-    if (amount == BigDecimal.ZERO) {
-        return@option BigDecimal.ZERO
+): Option<Double> = option {
+    if (amount == 0.0) {
+        return@option 0.0
     }
 
     val fromCurrency = data.fromCurrency.bind().validateCurrency().bind()
@@ -104,7 +104,7 @@ suspend fun validExchangeRate(
     baseCurrency: String,
     toCurrency: String,
     retrieveExchangeRate: suspend (baseCurrency: String, toCurrency: String) -> ExchangeRate?,
-): Option<BigDecimal> = option {
+): Option<Double> = option {
     retrieveExchangeRate(
         baseCurrency, toCurrency
     ).toOption().bind()
@@ -112,7 +112,7 @@ suspend fun validExchangeRate(
 }
 
 @Pure
-fun ExchangeRate.validateRate(): Option<BigDecimal> {
+fun ExchangeRate.validateRate(): Option<Double> {
     //exchange rate which <= 0 is invalid!
     return if (rate > 0) return Some(rate.toBigDecimal()) else None
 }

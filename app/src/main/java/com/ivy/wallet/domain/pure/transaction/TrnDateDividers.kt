@@ -17,7 +17,7 @@ import com.ivy.wallet.io.persistence.dao.AccountDao
 import com.ivy.wallet.io.persistence.dao.SettingsDao
 import com.ivy.wallet.utils.convertUTCtoLocal
 import com.ivy.wallet.utils.toEpochSeconds
-import java.math.BigDecimal
+
 import java.util.*
 
 @Deprecated("Migrate to actions")
@@ -49,7 +49,7 @@ suspend fun transactionsWithDateDividers(
     @SideEffect
     getAccount: suspend (accountId: UUID) -> Account?,
     @SideEffect
-    exchange: suspend (ExchangeData, BigDecimal) -> Option<BigDecimal>
+    exchange: suspend (ExchangeData, Double) -> Option<Double>
 ): List<TransactionHistoryItem> {
     if (transactions.isEmpty()) return emptyList()
 

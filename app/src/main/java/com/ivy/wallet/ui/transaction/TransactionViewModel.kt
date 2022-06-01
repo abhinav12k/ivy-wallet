@@ -16,7 +16,7 @@ import com.ivy.wallet.ui.transaction.data.TrnDate
 import com.ivy.wallet.utils.timeNowUTC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.math.BigDecimal
+
 import java.util.*
 import javax.inject.Inject
 
@@ -59,7 +59,7 @@ class TransactionViewModel @Inject constructor(
         TrnState.NewTransaction(
             type = event.type,
             account = event.account ?: accounts.head,
-            amount = BigDecimal.ZERO,
+            amount = 0.0,
             date = TrnDate.ActualDate(timeNowUTC()),
             category = event.category,
             title = null,
@@ -101,7 +101,7 @@ class TransactionViewModel @Inject constructor(
         }
 
     private suspend fun createNewTransaction(state: TrnState.NewTransaction) = with(state) {
-        if (amount <= BigDecimal.ZERO) {
+        if (amount <= 0.0) {
             return@with Res.Err("Transaction's amount can NOT be zero. Must be >0!")
         }
 
@@ -114,17 +114,20 @@ class TransactionViewModel @Inject constructor(
             Transaction(
                 id = UUID.randomUUID(),
                 amount = amount,
-                accountId = account.id,
+                account = account,
                 type = type,
-                categoryId = category?.id,
+                category = category,
                 title = title,
                 description = description,
-                toAccountId = toAccount?.id,
+                toAccount = toAccount,
                 toAmount = toAmount ?: amount, //TODO: Handle properly transfers exchange rate
                 dateTime = (date as? TrnDate.ActualDate)?.dateTime,
                 dueDate = (date as? TrnDate.DueDate)?.dueDate?.atTime(12, 0),
 
                 attachmentUrl = null,
+                recurringRuleId = null,
+                loanId = null,
+                loanRecordId = null,
 
                 isDeleted = false,
                 isSynced = false,

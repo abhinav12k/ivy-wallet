@@ -4,7 +4,7 @@ import com.ivy.wallet.domain.data.TransactionType
 import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.data.core.Category
 import com.ivy.wallet.domain.data.core.Transaction
-import java.math.BigDecimal
+
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -21,7 +21,7 @@ sealed class TrnEvent {
 
     // ---------------------------------
     data class AmountChanged(
-        val newAmount: BigDecimal
+        val newAmount: Double
     ) : TrnEvent()
 
     data class TitleChanged(
@@ -57,7 +57,7 @@ sealed class TrnEvent {
     ) : TrnEvent()
 
     data class SetExchangeRate(
-        val exchangeRate: BigDecimal
+        val exchangeRate: Double
     ) : TrnEvent()
 
     //----------------------------

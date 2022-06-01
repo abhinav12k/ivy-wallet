@@ -228,15 +228,15 @@ action -- Final Result --> output
 ```Kotlin
 //Example 1: Calculates Ivy's balance
 class CalcWalletBalanceAct @Inject constructor(
-    private val accountsAct: AccountsAct,
-    private val calcAccBalanceAct: CalcAccBalanceAct,
-    private val exchangeAct: ExchangeAct,
-) : FPAction<CalcWalletBalanceAct.Input, BigDecimal>() {
+  private val accountsAct: AccountsAct,
+  private val calcAccBalanceAct: CalcAccBalanceAct,
+  private val exchangeAct: ExchangeAct,
+) : FPAction<CalcWalletBalanceAct.Input, Double>() {
 
-    override suspend fun Input.compose(): suspend () -> BigDecimal = recipe().fixUnit()
+  override suspend fun Input.compose(): suspend () -> Double = recipe().fixUnit()
 
-    private suspend fun Input.recipe(): suspend (Unit) -> BigDecimal =
-        accountsAct thenFilter {
+  private suspend fun Input.recipe(): suspend (Unit) -> Double =
+    accountsAct thenFilter {
             withExcluded || it.includeInBalance
         } thenMap {
             calcAccBalanceAct(
@@ -256,9 +256,9 @@ class CalcWalletBalanceAct @Inject constructor(
                     amount = it.balance
                 )
             )
-        } thenSum {
-            it.orNull() ?: BigDecimal.ZERO
-        }
+    } thenSum {
+      it.orNull() ?: 0.0
+    }
 
     data class Input(
         val baseCurrency: String,
@@ -445,34 +445,34 @@ pure -- Calculates --> output
 ```Kotlin
 //domain.action (NOT PURE)
 class ExchangeAct @Inject constructor(
-    private val exchangeRateDao: ExchangeRateDao,
-) : FPAction<ExchangeAct.Input, Option<BigDecimal>>() {
-    override suspend fun Input.compose(): suspend () -> Option<BigDecimal> = suspend {
-        exchange(
-            data = data,
-            amount = amount,
-            getExchangeRate = exchangeRateDao::findByBaseCurrencyAndCurrency then {
-                it?.toDomain()
-            }
-        )
-    }
-
-    data class Input(
-        val data: ExchangeData,
-        val amount: BigDecimal
+  private val exchangeRateDao: ExchangeRateDao,
+) : FPAction<ExchangeAct.Input, Option<Double>>() {
+  override suspend fun Input.compose(): suspend () -> Option<Double> = suspend {
+    exchange(
+      data = data,
+      amount = amount,
+      getExchangeRate = exchangeRateDao::findByBaseCurrencyAndCurrency then {
+        it?.toDomain()
+      }
     )
+  }
+
+  data class Input(
+    val data: ExchangeData,
+    val amount: Double
+  )
 }
 
 
 //domain.pure (PURE)
 @Pure
 suspend fun exchange(
-    data: ExchangeData,
-    amount: BigDecimal,
+  data: ExchangeData,
+  amount: Double,
 
-    @SideEffect
-    getExchangeRate: suspend (baseCurrency: String, toCurrency: String) -> ExchangeRate?,
-): Option<BigDecimal> {
+  @SideEffect
+  getExchangeRate: suspend (baseCurrency: String, toCurrency: String) -> ExchangeRate?,
+): Option<Double> {
   //PURE IMPLEMENTATION
   //....
 }

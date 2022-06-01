@@ -6,7 +6,7 @@ import com.ivy.frp.SideEffect
 import com.ivy.wallet.domain.data.TransactionType
 import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.data.core.Transaction
-import java.math.BigDecimal
+
 import java.util.*
 
 typealias CategoryValueFunction = SuspendValueFunction<CategoryValueFunctions.Argument>
@@ -19,85 +19,85 @@ object CategoryValueFunctions {
         @SideEffect
         val exchangeToBaseCurrency: suspend (
             fromCurrency: Option<String>,
-            amount: BigDecimal
-        ) -> Option<BigDecimal>
+            amount: Double
+        ) -> Option<Double>
     )
 
     suspend fun balance(
         transaction: Transaction,
         arg: Argument,
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.categoryId == arg.categoryId) {
             when (type) {
                 TransactionType.INCOME -> amount.toBaseCurrencyOrZero(arg, accountId)
                 TransactionType.EXPENSE -> amount.toBaseCurrencyOrZero(arg, accountId).negate()
-                TransactionType.TRANSFER -> BigDecimal.ZERO
+                TransactionType.TRANSFER -> 0.0
             }
-        } else BigDecimal.ZERO
+        } else 0.0
     }
 
     suspend fun income(
         transaction: Transaction,
         arg: Argument,
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.categoryId == arg.categoryId) {
             when (type) {
                 TransactionType.INCOME -> amount.toBaseCurrencyOrZero(arg, accountId)
-                else -> BigDecimal.ZERO
+                else -> 0.0
             }
-        } else BigDecimal.ZERO
+        } else 0.0
     }
 
     suspend fun expense(
         transaction: Transaction,
         arg: Argument,
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.categoryId == arg.categoryId) {
             when (type) {
                 TransactionType.EXPENSE -> amount.toBaseCurrencyOrZero(arg, accountId)
-                else -> BigDecimal.ZERO
+                else -> 0.0
             }
-        } else BigDecimal.ZERO
+        } else 0.0
     }
 
     suspend fun incomeCount(
         transaction: Transaction,
         arg: Argument,
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.categoryId == arg.categoryId) {
             when (type) {
-                TransactionType.INCOME -> BigDecimal.ONE
-                else -> BigDecimal.ZERO
+                TransactionType.INCOME -> Double.ONE
+                else -> 0.0
             }
-        } else BigDecimal.ZERO
+        } else 0.0
     }
 
     suspend fun expenseCount(
         transaction: Transaction,
         arg: Argument,
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.categoryId == arg.categoryId) {
             when (type) {
-                TransactionType.EXPENSE -> BigDecimal.ONE
-                else -> BigDecimal.ZERO
+                TransactionType.EXPENSE -> Double.ONE
+                else -> 0.0
             }
-        } else BigDecimal.ZERO
+        } else 0.0
     }
 
-    private suspend fun BigDecimal.toBaseCurrencyOrZero(
+    private suspend fun Double.toBaseCurrencyOrZero(
         arg: Argument,
         accountId: UUID
-    ): BigDecimal {
+    ): Double {
         return this.convertToBaseCurrency(
             arg = arg,
             accountId = accountId
-        ).orNull() ?: BigDecimal.ZERO
+        ).orNull() ?: 0.0
     }
 
-    private suspend fun BigDecimal.convertToBaseCurrency(
+    private suspend fun Double.convertToBaseCurrency(
         accountId: UUID,
         arg: Argument
-    ): Option<BigDecimal> {
+    ): Option<Double> {
         val trnCurrency = arg.accounts.find { it.id == accountId }?.currency.toOption()
         return arg.exchangeToBaseCurrency(trnCurrency, this)
     }

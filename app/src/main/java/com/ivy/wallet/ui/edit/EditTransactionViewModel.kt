@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.math.BigDecimal
+
 import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
@@ -157,8 +157,8 @@ class EditTransactionViewModel @Inject constructor(
                 ),
                 categoryId = screen.categoryId,
                 type = screen.type,
-                amount = BigDecimal.ZERO,
-                toAmount = BigDecimal.ZERO
+                amount = 0.0,
+                toAmount = 0.0
             )
 
             display(loadedTransaction!!)

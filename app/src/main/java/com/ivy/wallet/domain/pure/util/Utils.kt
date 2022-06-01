@@ -2,7 +2,7 @@ package com.ivy.wallet.domain.pure.util
 
 import arrow.core.NonEmptyList
 import arrow.core.Option
-import java.math.BigDecimal
+
 
 fun <T> NonEmptyList<T>.mapIndexedNel(
     f: (Int, T) -> T
@@ -22,12 +22,12 @@ suspend fun <T> NonEmptyList<T>.mapIndexedNelSuspend(
     )
 }
 
-fun nonEmptyListOfZeros(n: Int): NonEmptyList<BigDecimal> {
+fun nonEmptyListOfZeros(n: Int): NonEmptyList<Double> {
     return NonEmptyList.fromListUnsafe(
-        List(n) { BigDecimal.ZERO }
+        List(n) { 0.0 }
     )
 }
 
-fun Option<BigDecimal>.orZero(): BigDecimal {
-    return this.orNull() ?: BigDecimal.ZERO
+fun Option<Double>.orZero(): Double {
+    return this.orNull() ?: 0.0
 }

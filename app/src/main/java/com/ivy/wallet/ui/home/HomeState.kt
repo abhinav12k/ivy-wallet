@@ -9,7 +9,7 @@ import com.ivy.wallet.ui.data.AppBaseData
 import com.ivy.wallet.ui.data.BufferInfo
 import com.ivy.wallet.ui.data.DueSection
 import com.ivy.wallet.ui.onboarding.model.TimePeriod
-import java.math.BigDecimal
+
 
 data class HomeState(
     val theme: Theme,
@@ -21,7 +21,7 @@ data class HomeState(
     val history: List<TransactionHistoryItem>,
     val stats: IncomeExpensePair,
 
-    val balance: BigDecimal,
+    val balance: Double,
 
     val buffer: BufferInfo,
 
@@ -40,10 +40,10 @@ data class HomeState(
                 accounts = emptyList(),
                 categories = emptyList()
             ),
-            balance = BigDecimal.ZERO,
+            balance = 0.0,
             buffer = BufferInfo(
-                amount = BigDecimal.ZERO,
-                bufferDiff = BigDecimal.ZERO,
+                amount = 0.0,
+                bufferDiff = 0.0,
             ),
             customerJourneyCards = emptyList(),
             history = emptyList(),

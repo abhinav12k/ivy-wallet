@@ -2,7 +2,7 @@ package com.ivy.wallet.domain.pure.transaction
 
 import com.ivy.wallet.domain.data.TransactionType
 import com.ivy.wallet.domain.data.core.Transaction
-import java.math.BigDecimal
+
 import java.util.*
 
 typealias AccountValueFunction = ValueFunction<UUID>
@@ -11,7 +11,7 @@ object AccountValueFunctions {
     fun balance(
         transaction: Transaction,
         accountId: UUID
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.account.id == accountId) {
             //Account's transactions
             when (type) {
@@ -29,7 +29,7 @@ object AccountValueFunctions {
             }
         } else {
             //potential transfer to account?
-            toAccount?.id?.takeIf { it == accountId } ?: return BigDecimal.ZERO
+            toAccount?.id?.takeIf { it == accountId } ?: return 0.0
             toAmount
         }
     }
@@ -37,49 +37,49 @@ object AccountValueFunctions {
     fun income(
         transaction: Transaction,
         accountId: UUID
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.account.id == accountId && type == TransactionType.INCOME)
-            amount else BigDecimal.ZERO
+            amount else 0.0
     }
 
     fun transferIncome(
         transaction: Transaction,
         accountId: UUID
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.toAccount.Id == accountId && type == TransactionType.TRANSFER)
-            toAmount else BigDecimal.ZERO
+            toAmount else 0.0
     }
 
     fun expense(
         transaction: Transaction,
         accountId: UUID
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.accountId == accountId && type == TransactionType.EXPENSE)
-            amount else BigDecimal.ZERO
+            amount else 0.0
     }
 
     fun transferExpense(
         transaction: Transaction,
         accountId: UUID
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.accountId == accountId && type == TransactionType.TRANSFER)
-            amount else BigDecimal.ZERO
+            amount else 0.0
     }
 
 
     fun incomeCount(
         transaction: Transaction,
         accountId: UUID
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.accountId == accountId && type == TransactionType.INCOME)
-            BigDecimal.ONE else BigDecimal.ZERO
+            Double.ONE else 0.0
     }
 
     fun expenseCount(
         transaction: Transaction,
         accountId: UUID
-    ): BigDecimal = with(transaction) {
+    ): Double = with(transaction) {
         if (this.accountId == accountId && type == TransactionType.EXPENSE)
-            BigDecimal.ONE else BigDecimal.ZERO
+            Double.ONE else 0.0
     }
 }

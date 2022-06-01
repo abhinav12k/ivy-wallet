@@ -11,18 +11,18 @@ import com.ivy.wallet.domain.action.account.CalcAccBalanceAct
 import com.ivy.wallet.domain.action.exchange.ExchangeAct
 import com.ivy.wallet.domain.pure.data.ClosedTimeRange
 import com.ivy.wallet.domain.pure.exchange.ExchangeData
-import java.math.BigDecimal
+
 import javax.inject.Inject
 
 class CalcWalletBalanceAct @Inject constructor(
     private val accountsAct: AccountsAct,
     private val calcAccBalanceAct: CalcAccBalanceAct,
     private val exchangeAct: ExchangeAct,
-) : FPAction<CalcWalletBalanceAct.Input, BigDecimal>() {
+) : FPAction<CalcWalletBalanceAct.Input, Double>() {
 
-    override suspend fun Input.compose(): suspend () -> BigDecimal = recipe().fixUnit()
+    override suspend fun Input.compose(): suspend () -> Double = recipe().fixUnit()
 
-    private suspend fun Input.recipe(): suspend (Unit) -> BigDecimal =
+    private suspend fun Input.recipe(): suspend (Unit) -> Double =
         accountsAct thenFilter {
             withExcluded || it.includeInBalance
         } thenMap {
@@ -44,7 +44,7 @@ class CalcWalletBalanceAct @Inject constructor(
                 )
             )
         } thenSum {
-            it.orNull() ?: BigDecimal.ZERO
+            it.orNull() ?: 0.0
         }
 
     data class Input(

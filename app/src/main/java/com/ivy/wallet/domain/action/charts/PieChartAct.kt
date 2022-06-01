@@ -23,7 +23,7 @@ import com.ivy.wallet.stringRes
 import com.ivy.wallet.ui.onboarding.model.FromToTimeRange
 import com.ivy.wallet.ui.statistic.level1.CategoryAmount
 import com.ivy.wallet.ui.theme.RedLight
-import java.math.BigDecimal
+
 import java.util.*
 import javax.inject.Inject
 
@@ -191,7 +191,7 @@ class PieChartAct @Inject constructor(
 
         @SideEffect
         incomeExpenseTransfer: suspend () -> IncomeExpenseTransferPair
-    ): BigDecimal {
+    ): Double {
         val incExpQuad = incomeExpenseTransfer()
         return when (type) {
             TransactionType.INCOME -> {
@@ -199,16 +199,16 @@ class PieChartAct @Inject constructor(
                         if (treatTransferAsIncExp)
                             incExpQuad.transferIncome
                         else
-                            BigDecimal.ZERO
+                            0.0
             }
             TransactionType.EXPENSE -> {
                 incExpQuad.expense +
                         if (treatTransferAsIncExp)
                             incExpQuad.transferExpense
                         else
-                            BigDecimal.ZERO
+                            0.0
             }
-            else -> BigDecimal.ZERO
+            else -> 0.0
         }
     }
 
@@ -232,7 +232,7 @@ class PieChartAct @Inject constructor(
         val incExpQuad = incomeExpenseTransfer()
 
         val catAmtList =
-            if (!showAccountTransfersCategory || incExpQuad.transferIncome == BigDecimal.ZERO && incExpQuad.transferExpense == BigDecimal.ZERO)
+            if (!showAccountTransfersCategory || incExpQuad.transferIncome == 0.0 && incExpQuad.transferExpense == 0.0)
                 categoryAmounts then { it.sortedByDescending { ca -> ca.amount } }
             else {
 

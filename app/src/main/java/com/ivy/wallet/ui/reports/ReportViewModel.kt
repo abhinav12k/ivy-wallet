@@ -39,7 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
+
 import javax.inject.Inject
 
 @HiltViewModel
@@ -318,7 +318,7 @@ class ReportViewModel @Inject constructor(
         return this.toLowerCaseLocal().contains(anotherString.toLowerCaseLocal())
     }
 
-    private fun calculateBalance(incomeExpenseTransferPair: IncomeExpenseTransferPair) : BigDecimal{
+    private fun calculateBalance(incomeExpenseTransferPair: IncomeExpenseTransferPair): Double {
         return incomeExpenseTransferPair.income + incomeExpenseTransferPair.transferIncome - incomeExpenseTransferPair.expense - incomeExpenseTransferPair.transferExpense
     }
 

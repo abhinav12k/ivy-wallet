@@ -42,7 +42,7 @@ import com.ivy.wallet.ui.onboarding.model.TimePeriod
 import com.ivy.wallet.ui.theme.modal.*
 import com.ivy.wallet.utils.horizontalSwipeListener
 import com.ivy.wallet.utils.verticalSwipeListener
-import java.math.BigDecimal
+
 
 private const val SWIPE_HORIZONTAL_THRESHOLD = 200
 
@@ -250,7 +250,7 @@ fun HomeLazyColumn(
 
     upcoming: DueSection,
     overdue: DueSection,
-    balance: BigDecimal,
+    balance: Double,
     stats: IncomeExpensePair,
     history: List<TransactionHistoryItem>,
 

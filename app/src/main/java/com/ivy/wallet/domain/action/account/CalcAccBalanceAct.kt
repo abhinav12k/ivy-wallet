@@ -7,7 +7,7 @@ import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.pure.data.ClosedTimeRange
 import com.ivy.wallet.domain.pure.transaction.AccountValueFunctions
 import com.ivy.wallet.domain.pure.transaction.foldTransactions
-import java.math.BigDecimal
+
 import javax.inject.Inject
 
 class CalcAccBalanceAct @Inject constructor(
@@ -39,6 +39,6 @@ class CalcAccBalanceAct @Inject constructor(
 
     data class Output(
         val account: Account,
-        val balance: BigDecimal,
+        val balance: Double,
     )
 }

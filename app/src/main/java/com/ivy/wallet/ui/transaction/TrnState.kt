@@ -6,7 +6,7 @@ import com.ivy.wallet.domain.data.core.Category
 import com.ivy.wallet.domain.data.core.Transaction
 import com.ivy.wallet.ui.transaction.data.TrnDate
 import com.ivy.wallet.ui.transaction.data.TrnExchangeRate
-import java.math.BigDecimal
+
 
 sealed class TrnState {
     object Initial : TrnState()
@@ -14,7 +14,7 @@ sealed class TrnState {
     data class NewTransaction(
         val type: TransactionType,
         val account: Account,
-        val amount: BigDecimal,
+        val amount: Double,
         val category: Category?,
         val date: TrnDate,
         val title: String?,
@@ -22,7 +22,7 @@ sealed class TrnState {
 
         //Transfers
         val toAccount: Account?,
-        val toAmount: BigDecimal?,
+        val toAmount: Double?,
         val exchangeRate: TrnExchangeRate?,
         //--------------------------
 

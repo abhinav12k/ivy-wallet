@@ -7,7 +7,7 @@ import com.ivy.wallet.domain.pure.data.IncomeExpensePair
 import com.ivy.wallet.domain.pure.data.WalletDAOs
 import com.ivy.wallet.utils.beginningOfIvyTime
 import com.ivy.wallet.utils.toEpochSeconds
-import java.math.BigDecimal
+
 import java.time.LocalDateTime
 
 data class ToRange(
@@ -19,7 +19,7 @@ suspend fun balanceChart(
     period: ChartPeriod,
 
     @SideEffect
-    calcWalletBalance: suspend (ClosedTimeRange) -> BigDecimal
+    calcWalletBalance: suspend (ClosedTimeRange) -> Double
 ): List<SingleChartPoint> {
     val orderedPeriod = period.toRangesList().sortedBy {
         it.to.toEpochSeconds()
@@ -37,7 +37,7 @@ tailrec suspend fun generateBalanceChart(
     accumulator: List<SingleChartPoint> = emptyList(),
 
     @SideEffect
-    calcWalletBalance: suspend (ClosedTimeRange) -> BigDecimal
+    calcWalletBalance: suspend (ClosedTimeRange) -> Double
 ): List<SingleChartPoint> {
     return if (orderedPeriod.isEmpty()) accumulator else {
         //recurse
@@ -51,7 +51,7 @@ tailrec suspend fun generateBalanceChart(
                     from = previousChartPoint?.range?.to?.plusSeconds(1) ?: beginningOfIvyTime(),
                     to = toDateTime
                 )
-            ) + (previousChartPoint?.value ?: BigDecimal.ZERO)
+            ) + (previousChartPoint?.value ?: 0.0)
         )
 
         generateBalanceChart(
@@ -134,7 +134,7 @@ suspend fun incomeExpenseCountChart(
 
 tailrec suspend fun generateIncomeExpenseCountChart(
     orderedPeriod: List<ClosedTimeRange>,
-    calculateWalletIncomeExpenseCount: suspend (range: ClosedTimeRange) -> Pair<BigDecimal, BigDecimal>,
+    calculateWalletIncomeExpenseCount: suspend (range: ClosedTimeRange) -> Pair<Double, Double>,
     accumulator: List<PairChartPoint> = emptyList()
 ): List<PairChartPoint> {
     return if (orderedPeriod.isEmpty()) accumulator else {

@@ -4,16 +4,16 @@ import com.ivy.wallet.domain.data.TransactionHistoryItem
 import com.ivy.wallet.domain.data.TransactionType
 import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.data.core.Category
-import java.math.BigDecimal
+
 import java.time.LocalDateTime
 import java.util.*
 
 data class DisplayTransaction(
     val account: Account?,
     val type: TransactionType,
-    val amount: BigDecimal,
+    val amount: Double,
     val toAccount: Account?,
-    val toAmount: BigDecimal,
+    val toAmount: Double,
     val title: String?,
     val description: String?,
     val dateTime: LocalDateTime?,

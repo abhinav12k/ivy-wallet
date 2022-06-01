@@ -8,10 +8,10 @@ import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.data.core.Transaction
 import com.ivy.wallet.domain.pure.account.accountCurrency
 import com.ivy.wallet.domain.pure.transaction.trnCurrency
-import java.math.BigDecimal
+
 import java.util.*
 
-typealias ExchangeEffect = suspend (ExchangeData, BigDecimal) -> Option<BigDecimal>
+typealias ExchangeEffect = suspend (ExchangeData, Double) -> Option<Double>
 
 data class ExchangeTrnArgument(
     val baseCurrency: String,
@@ -25,7 +25,7 @@ data class ExchangeTrnArgument(
 suspend fun exchangeInBaseCurrency(
     transaction: Transaction,
     arg: ExchangeTrnArgument
-): BigDecimal {
+): Double {
     val fromCurrency = arg.getAccount(transaction.account.id)?.let {
         accountCurrency(it, arg.baseCurrency)
     }.toOption()
@@ -47,7 +47,7 @@ suspend fun exchangeInBaseCurrency(
 
     @SideEffect
     exchange: ExchangeEffect
-): BigDecimal = exchangeInCurrency(
+): Double = exchangeInCurrency(
     transaction = transaction,
     baseCurrency = baseCurrency,
     accounts = accounts,
@@ -64,7 +64,7 @@ suspend fun exchangeInCurrency(
 
     @SideEffect
     exchange: ExchangeEffect
-): BigDecimal {
+): Double {
     return exchange(
         ExchangeData(
             baseCurrency = baseCurrency,
@@ -72,7 +72,7 @@ suspend fun exchangeInCurrency(
             toCurrency = toCurrency
         ),
         transaction.amount.toBigDecimal()
-    ).orNull() ?: BigDecimal.ZERO
+    ).orNull() ?: 0.0
 }
 
 suspend fun exchangeInCurrency(
@@ -83,7 +83,7 @@ suspend fun exchangeInCurrency(
 
     @SideEffect
     exchange: ExchangeEffect
-): BigDecimal {
+): Double {
     return exchange(
         ExchangeData(
             baseCurrency = baseCurrency,
@@ -91,5 +91,5 @@ suspend fun exchangeInCurrency(
             toCurrency = toCurrency
         ),
         transaction.amount.toBigDecimal()
-    ).orNull() ?: BigDecimal.ZERO
+    ).orNull() ?: 0.0
 }

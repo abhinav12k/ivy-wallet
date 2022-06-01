@@ -38,7 +38,7 @@ import com.ivy.wallet.utils.ioThread
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.math.BigDecimal
+
 import javax.inject.Inject
 
 @HiltViewModel
@@ -144,7 +144,7 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun loadIncomeExpenseBalance(
         input: Triple<Settings, ClosedTimeRange, List<Account>>
-    ): Triple<Settings, ClosedTimeRange, BigDecimal> {
+    ): Triple<Settings, ClosedTimeRange, Double> {
         val (settings, timeRange, accounts) = input
 
         val incomeExpense = calcIncomeExpenseAct(
@@ -170,7 +170,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun loadBuffer(
-        input: Triple<Settings, ClosedTimeRange, BigDecimal>
+        input: Triple<Settings, ClosedTimeRange, Double>
     ): Pair<String, ClosedTimeRange> {
         val (settings, timeRange, balance) = input
 

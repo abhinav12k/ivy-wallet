@@ -8,7 +8,7 @@ import com.ivy.wallet.domain.pure.data.ClosedTimeRange
 import com.ivy.wallet.domain.pure.data.IncomeExpensePair
 import com.ivy.wallet.domain.pure.transaction.AccountValueFunctions
 import com.ivy.wallet.domain.pure.transaction.foldTransactions
-import java.math.BigDecimal
+
 import javax.inject.Inject
 
 class CalcAccIncomeExpenseAct @Inject constructor(
@@ -35,8 +35,8 @@ class CalcAccIncomeExpenseAct @Inject constructor(
         Output(
             account = account,
             incomeExpensePair = IncomeExpensePair(
-                income = values[0] + if (includeTransfersInCalc) values[2] else BigDecimal.ZERO,
-                expense = values[1] + if (includeTransfersInCalc) values[3] else BigDecimal.ZERO
+                income = values[0] + if (includeTransfersInCalc) values[2] else 0.0,
+                expense = values[1] + if (includeTransfersInCalc) values[3] else 0.0
             )
         )
     }

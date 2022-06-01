@@ -1,12 +1,12 @@
 package com.ivy.wallet.domain.pure.data
 
-import java.math.BigDecimal
+
 
 data class IncomeExpensePair(
-    val income: BigDecimal,
-    val expense: BigDecimal
+    val income: Double,
+    val expense: Double
 ) {
     companion object {
-        fun zero(): IncomeExpensePair = IncomeExpensePair(BigDecimal.ZERO, BigDecimal.ZERO)
+        fun zero(): IncomeExpensePair = IncomeExpensePair(0.0, 0.0)
     }
 }
