@@ -1,95 +1,44 @@
 package com.ivy.wallet.domain.pure.exchange
 
 import arrow.core.Option
-import arrow.core.toOption
 import com.ivy.frp.Pure
-import com.ivy.frp.SideEffect
-import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.data.core.Transaction
-import com.ivy.wallet.domain.pure.account.accountCurrency
-import com.ivy.wallet.domain.pure.transaction.trnCurrency
 
-import java.util.*
-
-typealias ExchangeEffect = suspend (ExchangeData, Double) -> Option<Double>
 
 data class ExchangeTrnArgument(
     val baseCurrency: String,
-    @SideEffect
-    val getAccount: suspend (accountId: UUID) -> Account?,
-    @SideEffect
-    val exchange: ExchangeEffect
+    val rates: ExchangeRates
 )
 
 @Pure
 suspend fun exchangeInBaseCurrency(
     transaction: Transaction,
     arg: ExchangeTrnArgument
-): Double {
-    val fromCurrency = arg.getAccount(transaction.account.id)?.let {
-        accountCurrency(it, arg.baseCurrency)
-    }.toOption()
-
-    return exchangeInCurrency(
-        transaction = transaction,
-        baseCurrency = arg.baseCurrency,
-        trnCurrency = fromCurrency,
-        toCurrency = arg.baseCurrency,
-        exchange = arg.exchange
-    )
-}
-
-@Pure
-suspend fun exchangeInBaseCurrency(
-    transaction: Transaction,
-    baseCurrency: String,
-    accounts: List<Account>,
-
-    @SideEffect
-    exchange: ExchangeEffect
-): Double = exchangeInCurrency(
+): Option<Double> = arg.rates.exchangeInBaseCurrency(
     transaction = transaction,
-    baseCurrency = baseCurrency,
-    accounts = accounts,
-    toCurrency = baseCurrency,
-    exchange = exchange
+    baseCurrency = arg.baseCurrency,
 )
 
 @Pure
-suspend fun exchangeInCurrency(
+suspend fun ExchangeRates.exchangeInBaseCurrency(
     transaction: Transaction,
     baseCurrency: String,
-    accounts: List<Account>,
-    toCurrency: String,
+): Option<Double> = exchangeInCurrency(
+    transaction = transaction,
+    baseCurrency = baseCurrency,
+    toCurrency = baseCurrency,
+)
 
-    @SideEffect
-    exchange: ExchangeEffect
-): Double {
-    return exchange(
-        ExchangeData(
-            baseCurrency = baseCurrency,
-            fromCurrency = trnCurrency(transaction, accounts, baseCurrency),
-            toCurrency = toCurrency
-        ),
-        transaction.amount.toBigDecimal()
-    ).orNull() ?: 0.0
-}
-
-suspend fun exchangeInCurrency(
-    transaction: Transaction,
+@Pure
+suspend fun ExchangeRates.exchangeInCurrency(
     baseCurrency: String,
-    trnCurrency: Option<String>,
+    transaction: Transaction,
     toCurrency: String,
-
-    @SideEffect
-    exchange: ExchangeEffect
-): Double {
-    return exchange(
-        ExchangeData(
-            baseCurrency = baseCurrency,
-            fromCurrency = trnCurrency,
-            toCurrency = toCurrency
-        ),
-        transaction.amount.toBigDecimal()
-    ).orNull() ?: 0.0
-}
+): Option<Double> = exchange(
+    data = ExchangeData(
+        baseCurrency = baseCurrency,
+        fromCurrency = transaction.account.currency ?: baseCurrency,
+        toCurrency = toCurrency
+    ),
+    amount = transaction.amount,
+)

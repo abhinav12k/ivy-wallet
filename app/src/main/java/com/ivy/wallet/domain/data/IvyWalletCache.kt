@@ -4,6 +4,7 @@ import arrow.core.Option
 import com.ivy.wallet.domain.data.core.Account
 import com.ivy.wallet.domain.data.core.Category
 import com.ivy.wallet.domain.data.core.Settings
+import com.ivy.wallet.domain.pure.exchange.ExchangeRates
 import java.util.*
 
 data class IvyWalletCache(
@@ -18,5 +19,5 @@ data class IvyWalletCache(
 
     val startDayOfMonth: Int,
 
-    val exchangeRates: Option<Map<String, Double>>,
+    val exchangeRates: Option<ExchangeRates>,
 )

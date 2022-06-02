@@ -20,7 +20,7 @@ class MapDisplayTrnsAct @Inject constructor(
             DisplayTransaction(
                 account = account(
                     accountId = it.account.id,
-                    accountMap = ivyWalletCtx.cache.accountMap,
+                    accountMap = ivyWalletCtx.cache.unsafeRead().accountMap,
                     accounts = accounts
                 ),
                 type = it.type,

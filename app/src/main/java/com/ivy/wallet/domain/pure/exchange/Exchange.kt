@@ -4,48 +4,38 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import arrow.core.computations.option
-import arrow.core.toOption
 import com.ivy.frp.Pure
-import com.ivy.frp.SideEffect
-import com.ivy.wallet.domain.data.core.ExchangeRate
 import com.ivy.wallet.utils.isNotNullOrBlank
 
+typealias ExchangeRates = Map<String, Double>
 
 data class ExchangeData(
     val baseCurrency: String,
-    val fromCurrency: Option<String>,
+    val fromCurrency: String,
     val toCurrency: String = baseCurrency,
 )
 
-
 @Pure
-suspend fun exchange(
+suspend fun ExchangeRates.exchange(
     data: ExchangeData,
     amount: Double,
-
-    @SideEffect
-    getExchangeRate: suspend (baseCurrency: String, toCurrency: String) -> ExchangeRate?,
 ): Option<Double> = option {
     if (amount == 0.0) {
         return@option 0.0
     }
 
-    val fromCurrency = data.fromCurrency.bind().validateCurrency().bind()
+    val fromCurrency = data.fromCurrency.validateCurrency().bind()
     val toCurrency = data.toCurrency.validateCurrency().bind()
 
     if (fromCurrency == toCurrency) {
         return@option amount
     }
 
-    when (val baseCurrency = data.baseCurrency.validateCurrency().bind()) {
+    when (data.baseCurrency.validateCurrency().bind()) {
         fromCurrency -> {
             //exchange from base currency to other currency
             //we need the rate from baseCurrency to toCurrency
-            val rateFromTo = validExchangeRate(
-                baseCurrency = fromCurrency, //fromCurrency = baseCurrency
-                toCurrency = toCurrency,
-                retrieveExchangeRate = getExchangeRate
-            ).bind()
+            val rateFromTo = getValidExchangeRate(toCurrency).bind()
 
             //toAmount = fromAmount * rateFromTo
             amount * rateFromTo
@@ -54,11 +44,7 @@ suspend fun exchange(
             //exchange from other currency to base currency
             //we'll get the rate to
 
-            val rateToFrom = validExchangeRate(
-                baseCurrency = toCurrency, //toCurrency = baseCurrency
-                toCurrency = fromCurrency,
-                retrieveExchangeRate = getExchangeRate
-            ).bind()
+            val rateToFrom = getValidExchangeRate(fromCurrency).bind()
 
             /*
             Example: fromA = 10 fromC = EUR; toC = BGN
@@ -75,17 +61,8 @@ suspend fun exchange(
             //exchange from other currency to other currency
             //that's the only possible case left because we already checked "fromCurrency == toCurrency"
 
-            val rateBaseFrom = validExchangeRate(
-                baseCurrency = baseCurrency,
-                toCurrency = fromCurrency,
-                retrieveExchangeRate = getExchangeRate
-            ).bind()
-
-            val rateBaseTo = validExchangeRate(
-                baseCurrency = baseCurrency,
-                toCurrency = toCurrency,
-                retrieveExchangeRate = getExchangeRate
-            ).bind()
+            val rateBaseFrom = getValidExchangeRate(fromCurrency).bind()
+            val rateBaseTo = getValidExchangeRate(toCurrency).bind()
 
             //Convert: toBaseCurrency -> toToCurrency
             val amountBaseCurrency = amount / rateBaseFrom
@@ -99,20 +76,16 @@ private fun String.validateCurrency(): Option<String> {
     return if (this.isNotNullOrBlank()) return Some(this) else None
 }
 
+/**
+ * Returns an exchange rate between "baseCurrency" and the selected "currency".
+ */
 @Pure
-suspend fun validExchangeRate(
-    baseCurrency: String,
-    toCurrency: String,
-    retrieveExchangeRate: suspend (baseCurrency: String, toCurrency: String) -> ExchangeRate?,
-): Option<Double> = option {
-    retrieveExchangeRate(
-        baseCurrency, toCurrency
-    ).toOption().bind()
-        .validateRate().bind()
-}
+private fun ExchangeRates.getValidExchangeRate(
+    currency: String,
+): Option<Double> = this[currency].validateRate()
 
 @Pure
-fun ExchangeRate.validateRate(): Option<Double> {
+private fun Double?.validateRate(): Option<Double> {
     //exchange rate which <= 0 is invalid!
-    return if (rate > 0) return Some(rate.toBigDecimal()) else None
+    return if (this != null && this > 0) return Some(this) else None
 }
